@@ -15,12 +15,13 @@ export class SignupDto {
   @ApiProperty({ description: 'DTO 전화번호' })
   phone: string;
 
+  hashedAccessToken?: string | null | undefined;
 }
 
 export class LoginDto extends PickType(UsersEntity, ['email', 'password']) {}
 
 export class LogoutDto {
-  @ApiProperty({ description: '이메일' })
+  @ApiProperty({ description: 'DTO 이메일' })
   email: string;
 }
 

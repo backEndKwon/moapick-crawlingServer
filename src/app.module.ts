@@ -9,8 +9,22 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeORMConfig } from './configs/typeorm.config';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 @Module({
-  imports: [TypeOrmModule.forRoot(typeORMConfig),UserModule, AuthModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule], // ConfigModule을 import
+      useFactory: (configService: ConfigService) =>
+        typeORMConfig(configService), // ConfigService 주입하여 typeORMConfig 함수 호출
+      inject: [ConfigService], // ConfigService 주입
+    }),
+    UserModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

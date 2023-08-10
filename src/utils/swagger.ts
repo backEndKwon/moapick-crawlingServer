@@ -12,4 +12,6 @@ export const setupSwagger = (app: INestApplication) => {
 
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api-docs', app, document);
+  //swagger보는 방법 : http://localhost:3030/api-docs
+
 };
