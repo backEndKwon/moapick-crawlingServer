@@ -47,7 +47,6 @@ export class UserController {
   //   return await this.userService.logout(logoutDto);
   // }
 
-
   // (4) AuthGuard 테스트를 위한 임시 API
   @Get('/mypage')
   @ApiOperation({
