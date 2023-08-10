@@ -20,7 +20,8 @@ export class UserController {
   @Post('/login')
   async login(@Body() loginDto: LoginDto, @Req() req: any) {
     const accessToken = await this.authService.loginServiceUser(req.user);
-    return accessToken;
+    const user = await this.authService.findUser(req.user.email);
+    return { accessToken, user };
     // return await this.userService.login(signupDto);
   }
 

@@ -31,4 +31,11 @@ export class AuthService {
       accessToken: this.jwtService.sign(payload),
     };
   }
+
+  async findUser(email: string) {
+    const existUser = await this.userRepository.findOne({ where: { email } });
+    if (!existUser) throw new ForbiddenException('존재하지 않는 계정입니다.');
+    const { password, createdAt, updatedAt, ...result } = existUser;
+    return result;
+  }
 }
