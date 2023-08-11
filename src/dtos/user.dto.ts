@@ -20,6 +20,7 @@ export class SignupDto {
 }
 
 export class LoginDto extends PickType(UsersEntity, ['email', 'password']) {}
+export class GoogleLoginDto extends PickType(UsersEntity, ['email', 'name']) {}
 
 export class LogoutDto {
   @ApiProperty({ description: 'DTO 이메일' })

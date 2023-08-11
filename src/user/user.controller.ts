@@ -14,7 +14,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { JwtServiceAuthGuard } from 'src/auth/guards/jwt-service.guard';
 import { ApiOperation, ApiProperty } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-
+import{GoogleLoginDto} from 'src/dtos/user.dto'
 @Controller('auth')
 export class UserController {
   constructor(
@@ -59,11 +59,15 @@ export class UserController {
 
   // (4) Google 로그인
   @Post('/login/google')
-  async googleLogin(@Body() body: any, @Res() res: any): Promise<any> {
-    const {email, name, phone } = body; //FE에서 받아온 email
+  @ApiOperation({
+    summary: '[구글] 로그인',
+    description: '[구글] 구글로그인시 사용자의 email, name를 서버로 받아와 DB저장후 자체 AccessToken발급',
+  })
+  async googleLogin(@Body() body: GoogleLoginDto, @Res() res: any): Promise<any> {
+    const {email, name } = body; //FE에서 받아온 email
     console.log('===========> controller~ email:', email);
     console.log('===========> controller~ body:', body);
-    const accessToken = await this.authService.GoogleLoginServiceUser(email);
+    const accessToken = await this.authService.googleLogin(email,name);
     res.send(accessToken);
   }
 
