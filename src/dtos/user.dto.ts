@@ -1,5 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { UsersEntity } from 'src/entity/user.entity';
+// import { IsOptional, IsString } from 'class-validator';
 // import { UUID } from '../types/user.type';
 
 export class SignupDto {

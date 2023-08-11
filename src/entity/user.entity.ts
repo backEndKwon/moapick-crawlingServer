@@ -32,7 +32,7 @@ import { ApiProperty } from '@nestjs/swagger';
       example: '123qwe!!',
       description: '사용자 비밀번호',
     })
-    @Column()
+    @Column({nullable: true})
     password: string;
   
     @ApiProperty({

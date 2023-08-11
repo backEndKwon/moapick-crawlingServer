@@ -31,21 +31,19 @@ export class UserService {
 
   // email로 사용자 조회
   async findByEmail(email: string) {
+    console.log("===========> ~ email:", email)
     const existUser = await this.userRepository.findOne({ where: { email } });
-    if (existUser) {
-      throw new ConflictException('존재하지 않는 계정입니다.')
-    }
     return existUser;
   }
 
-  // 비밀번호 암호화
+  // 비밀번호 암호화 // argon2변경 전
   async hashPassword(password: string) {
-    return await bcrypt.hash(password, this.configService.get<string>('HASH_PASSWORD_LEVEL'));
+    return await bcrypt.hash(password, 11);
   }
   // 사용자 생성 및 저장
   async createUser(
     email: string,
-    password: string,
+    password: string|null,
     name: string,
     phone: string,
   ) {

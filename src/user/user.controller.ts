@@ -1,10 +1,20 @@
-import { Get, Controller, Body, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Get,
+  Controller,
+  Body,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { LoginDto, LogoutDto, SignupDto } from 'src/dtos/user.dto';
 import { UserService } from './user.service';
 import { LocalServiceAuthGuard } from 'src/auth/guards/local-service.guard';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtServiceAuthGuard } from 'src/auth/guards/jwt-service.guard';
 import { ApiOperation, ApiProperty } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+
 @Controller('auth')
 export class UserController {
   constructor(
@@ -22,7 +32,7 @@ export class UserController {
     return await this.userService.signup(signupDto);
   }
 
-  // (2) 로그인
+  // (2) [일반]로그인
   @Post('/login')
   @ApiOperation({
     summary: '[일반] 로그인 API',
@@ -30,13 +40,13 @@ export class UserController {
   })
   @UseGuards(LocalServiceAuthGuard)
   async login(@Body() loginDto: LoginDto, @Req() req: any) {
-    const accessToken = await this.authService.loginServiceUser(req.user);
+    const accessToken = await this.authService.loginServiceUser(req.user.email);
     const user = await this.authService.findUser(req.user.email);
     return { accessToken, user };
     // return await this.userService.login(signupDto);
   }
 
-  // // (3) 로그아웃
+  // // (3) [일반]로그아웃
   // @Post('/logout')
   // @UseGuards(JwtServiceAuthGuard)
   // @ApiOperation({
@@ -46,6 +56,16 @@ export class UserController {
   // async logout(@Body() logoutDto: LogoutDto) {
   //   return await this.userService.logout(logoutDto);
   // }
+
+  // (4) Google 로그인
+  @Post('/login/google')
+  async googleLogin(@Body() body: any, @Res() res: any): Promise<any> {
+    const {email, name, phone } = body; //FE에서 받아온 email
+    console.log('===========> controller~ email:', email);
+    console.log('===========> controller~ body:', body);
+    const accessToken = await this.authService.GoogleLoginServiceUser(email);
+    res.send(accessToken);
+  }
 
   // (4) AuthGuard 테스트를 위한 임시 API
   @Get('/mypage')
