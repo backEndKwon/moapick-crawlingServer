@@ -62,13 +62,13 @@ export class AuthService {
     // try {
     const existUser = await this.userRepository.findOne({ where: { email } });
     console.log('===========> ~ existUser:', existUser);
-    if (existUser) throw new ForbiddenException('이미 존재하는 계정입니다.');
+    if (!existUser) throw new ForbiddenException('존재하지 않는 계정입니다.');
     const password = null;
 
     await this.userRepository.save({ email, password, name });
 
     const accessToken = await this.GoogleLoginServiceUser(email);
-    return { accessToken };
+    return accessToken;
     // } catch (err) {
     //   console.log("===========> ~ err:", err)
 

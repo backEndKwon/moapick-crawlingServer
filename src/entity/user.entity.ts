@@ -46,7 +46,7 @@ import { ApiProperty } from '@nestjs/swagger';
       example: '010-1234-5678',
       description: '사용자 전화번호',
     })
-    @Column()
+    @Column({nullable: true})
     phone: string;
   
     @ApiProperty({
