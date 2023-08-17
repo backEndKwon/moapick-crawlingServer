@@ -6,15 +6,21 @@ import {
   Req,
   Res,
   UseGuards,
+  Headers,
 } from '@nestjs/common';
-import { LoginDto, LogoutDto, SignupDto } from 'src/dtos/user.dto';
+import {
+  LoginDto,
+  LogoutDto,
+  SignupDto,
+  addCompanyInfoDto,
+} from 'src/dtos/user.dto';
 import { UserService } from './user.service';
 import { LocalServiceAuthGuard } from 'src/auth/guards/local-service.guard';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtServiceAuthGuard } from 'src/auth/guards/jwt-service.guard';
 import { ApiOperation, ApiProperty } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import{GoogleLoginDto} from 'src/dtos/user.dto'
+import { GoogleLoginDto } from 'src/dtos/user.dto';
+import { OneToOne } from 'typeorm';
 @Controller('auth')
 export class UserController {
   constructor(
@@ -22,7 +28,7 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
-  // (1) 회원가입
+  // ① [Common] Signup
   @Post('/signup')
   @ApiOperation({
     summary: '[일반] 회원가입 API',
@@ -32,7 +38,7 @@ export class UserController {
     return await this.userService.signup(signupDto);
   }
 
-  // (2) [일반]로그인
+  // ② [Common] Login
   @Post('/login')
   @ApiOperation({
     summary: '[일반] 로그인 API',
@@ -40,13 +46,51 @@ export class UserController {
   })
   @UseGuards(LocalServiceAuthGuard)
   async login(@Body() loginDto: LoginDto, @Req() req: any) {
-    const accessToken = await this.authService.loginServiceUser(req.user.email);
-    const user = await this.authService.findUser(req.user.email);
-    return { accessToken, user };
-    // return await this.userService.login(signupDto);
+    return await this.authService.commonLogin(req.user);
   }
 
-  // // (3) [일반]로그아웃
+  // ③ [Google] Login
+  @Post('/login/google')
+  @ApiOperation({
+    summary: '[구글] 로그인',
+    description:
+      '[구글] 구글로그인시 사용자의 email, name를 서버로 받아와 DB저장후 자체 AccessToken발급',
+  })
+  async googleLogin(
+    @Body() body: GoogleLoginDto,
+    @Res() res: any,
+  ): Promise<any> {
+    const { email, name } = body; //FE에서 받아온 email
+    console.log('===========> controller~ email:', email);
+    console.log('===========> controller~ body:', body);
+    const accessToken = await this.authService.googleLogin(email, name);
+    res.send(accessToken);
+  }
+
+ // ④ [addInfo] addCompanyInfo
+  @Post('/signup/addCompanyInfo')
+  @ApiOperation({
+    summary: '[추가정보] 추가정보받기 API',
+    description: '[추가정보] 추가정보받기 API',
+  })
+  async addCompanyInfo(@Body() body: addCompanyInfoDto): Promise<void> {
+    await this.userService.addCompanyInfo(body);
+  } 
+
+  // (*) AuthGuard 테스트를 위한 임시 API
+  @Get('/dashboard')
+  @ApiOperation({
+    summary: '[일반] 모든 유저 정보 조회',
+    description: '[일반] 해당 유저의 모든 유저 조회',
+  })
+  @UseGuards(JwtServiceAuthGuard)
+  async mypage(@Headers() headers: any) {
+    console.log('===========> controller~ Headers:', headers);
+    return { result: true, message: 'mypage 조회 성공' };
+  }
+  //------------------------------------------------------------------//
+
+  // // (4) [Common] Logout
   // @Post('/logout')
   // @UseGuards(JwtServiceAuthGuard)
   // @ApiOperation({
@@ -57,28 +101,17 @@ export class UserController {
   //   return await this.userService.logout(logoutDto);
   // }
 
-  // (4) Google 로그인
-  @Post('/login/google')
-  @ApiOperation({
-    summary: '[구글] 로그인',
-    description: '[구글] 구글로그인시 사용자의 email, name를 서버로 받아와 DB저장후 자체 AccessToken발급',
-  })
-  async googleLogin(@Body() body: GoogleLoginDto, @Res() res: any): Promise<any> {
-    const {email, name } = body; //FE에서 받아온 email
-    console.log('===========> controller~ email:', email);
-    console.log('===========> controller~ body:', body);
-    const accessToken = await this.authService.googleLogin(email,name);
-    res.send(accessToken);
-  }
+  // // (*) AuthGuard 테스트를 위한 임시 API
+  // @Get('/mypage')
+  // @ApiOperation({
+  //   summary: '[일반] 본인 정보조회',
+  //   description: '[일반] 본인 세부정보 조회, accessToken 인증',
+  // })
+  // @UseGuards(JwtServiceAuthGuard)
+  // async mypage(@Headers() headers: any) {
+  //   console.log('===========> controller~ Headers:', headers);
+  //   return { result: true, message: 'mypage 조회 성공' };
+  // }
 
-  // (4) AuthGuard 테스트를 위한 임시 API
-  @Get('/mypage')
-  @ApiOperation({
-    summary: '[일반] 본인 정보조회',
-    description: '[일반] 본인 세부정보 조회, accessToken 인증',
-  })
-  @UseGuards(JwtServiceAuthGuard)
-  async mypage() {
-    return { result: true, message: 'mypage 조회 성공' };
-  }
+ 
 }
