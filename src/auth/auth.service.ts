@@ -15,11 +15,12 @@ export class AuthService {
   constructor(
     @InjectRepository(UsersEntity)
     private readonly userRepository: Repository<UsersEntity>,
-    private jwtService: JwtService,
     private readonly userService: UserService,
+    private readonly jwtService: JwtService,
   ) {}
   // (1) [일반] 로그인
   async commonLogin(user: LoginDto) {
+    // validateUser 까지 가능(validate 분리예정)
     try {
       const email = user.email;
       const loginUserPassword = user.password;
@@ -34,6 +35,7 @@ export class AuthService {
       const accessToken = await this.loginServiceUser(email);
       return { accessToken, userInfo };
     } catch (err) {
+      console.log(err);
       throw new err('로그인에 실패하였습니다.');
     }
   }
@@ -85,7 +87,16 @@ export class AuthService {
       throw new err('사용자정보 반환에 실패하였습니다.');
     }
   }
-
+  async decodeToken(token: string) {
+    try {
+      const decoded = this.jwtService.decode(token);
+      console.log(decoded)
+      if (!decoded) throw new ForbiddenException('토큰이 존재하지 않습니다.');
+      return decoded;
+    } catch (err) {
+      throw new err('토큰 디코딩에 실패하였습니다.');
+    }
+  }
   // (4) 로그아웃시 accesstoken null 처리
   // async updateAccessToken(email: string, accessToken: string | null) {
   //   const existUser = await this.userRepository.findOne({ where: { email } });

@@ -15,7 +15,7 @@ import {
   addCompanyInfoDto,
 } from 'src/dtos/user.dto';
 import { UserService } from './user.service';
-import { LocalServiceAuthGuard } from 'src/auth/guards/local-service.guard';
+// import { LocalServiceAuthGuard } from 'src/auth/guards/local-service.guard';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtServiceAuthGuard } from 'src/auth/guards/jwt-service.guard';
 import { ApiOperation, ApiProperty } from '@nestjs/swagger';
@@ -44,9 +44,9 @@ export class UserController {
     summary: '[일반] 로그인 API',
     description: '[일반] 사용자 로그인',
   })
-  @UseGuards(LocalServiceAuthGuard)
+  // @UseGuards(LocalServiceAuthGuard)
   async login(@Body() loginDto: LoginDto, @Req() req: any) {
-    return await this.authService.commonLogin(req.user);
+    return await this.authService.commonLogin(loginDto);
   }
 
   // ③ [Google] Login
@@ -83,10 +83,13 @@ export class UserController {
     summary: '[일반] 모든 유저 정보 조회',
     description: '[일반] 해당 유저의 모든 유저 조회',
   })
+
   @UseGuards(JwtServiceAuthGuard)
   async mypage(@Headers() headers: any) {
+    //controller단계에서 임시에러처리
+    if(!headers.authorization) return { result: false, message: '토큰이 없습니다.' };
     console.log('===========> controller~ Headers:', headers);
-    return { result: true, message: 'mypage 조회 성공' };
+    return await this.userService.getApplicantList(headers);
   }
   //------------------------------------------------------------------//
 
