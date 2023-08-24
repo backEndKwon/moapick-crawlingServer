@@ -77,20 +77,20 @@ export class UserController {
     await this.userService.addCompanyInfo(body);
   } 
 
-  // (*) AuthGuard 테스트를 위한 임시 API
-  @Get('/dashboard')
-  @ApiOperation({
-    summary: '[일반] 모든 유저 정보 조회',
-    description: '[일반] 해당 유저의 모든 유저 조회',
-  })
+  // // (*) AuthGuard 테스트를 위한 임시 API
+  // @Get('/dashboard')
+  // @ApiOperation({
+  //   summary: '[일반] 모든 유저 정보 조회',
+  //   description: '[일반] 해당 유저의 모든 유저 조회',
+  // })
 
-  @UseGuards(JwtServiceAuthGuard)
-  async mypage(@Headers() headers: any) {
-    //controller단계에서 임시에러처리
-    if(!headers.authorization) return { result: false, message: '토큰이 없습니다.' };
-    console.log('===========> controller~ Headers:', headers);
-    return await this.userService.getApplicantList(headers);
-  }
+  // @UseGuards(JwtServiceAuthGuard)
+  // async mypage(@Headers() headers: any) {
+  //   //controller단계에서 임시에러처리
+  //   if(!headers.authorization) return { result: false, message: '토큰이 없습니다.' };
+  //   console.log('===========> controller~ Headers:', headers);
+  //   return await this.userService.getApplicantList(headers);
+  // }
   //------------------------------------------------------------------//
 
   // // (4) [Common] Logout

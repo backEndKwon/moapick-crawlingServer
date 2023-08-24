@@ -13,7 +13,6 @@ import { ConfigService } from '@nestjs/config';
 import * as argon from 'argon2';
 import { CompanyEntity } from 'src/entity/company.entity';
 import { AuthService } from 'src/auth/auth.service';
-import { ApplicantEntity } from 'src/entity/applicant.entity';
 @Injectable()
 export class UserService {
   constructor(
@@ -21,10 +20,6 @@ export class UserService {
     private readonly userRepository: Repository<UsersEntity>,
     @InjectRepository(CompanyEntity)
     private readonly companyRepository: Repository<CompanyEntity>,
-    @InjectRepository(ApplicantEntity)
-    private readonly applicantRepository: Repository<ApplicantEntity>,
-    private readonly authService: AuthService,
-    private readonly configService: ConfigService,
   ) {}
 
   // (1) 회원가입
@@ -79,26 +74,4 @@ export class UserService {
     });
     await this.companyRepository.save(createCompanyInfo);
   }
-  async getApplicantList(headers: string) {
-    const token = headers.split(' ')[1];
-    const userToken = await this.authService.decodeToken(token);
-    const email = userToken['email'];
-    console.log('===========> ~ email:', email);
-    if (!email) {
-      throw new NotAcceptableException('존재하지 않는 사용자입니다.');
-    }
-    const user = await this.findByEmail(email);
-    const company = await this.companyRepository.findOne({
-      where: { user_id: user.user_id },
-    });
-    const applicantList = await this.applicantRepository.findOne({
-      where: { company_id: company.company_id },
-    });
-    console.log('===========> ~ applicantList:', applicantList);
-    return applicantList;
-  }
-
-  // // 로그아웃
-  // async logout() {
-  // }
 }

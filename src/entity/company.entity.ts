@@ -11,7 +11,6 @@ import {
 //   import { PostsEntity } from '../posts/posts.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { UsersEntity } from './user.entity';
-import { ApplicantEntity } from './applicant.entity';
 
 @Entity('Company')
 export class CompanyEntity extends BaseEntity {
@@ -50,45 +49,6 @@ export class CompanyEntity extends BaseEntity {
   @CreateDateColumn()
   createdAt: Date;
 
-  // 그리팅 계정
-  @ApiProperty({
-    example: 'sparta123',
-    description: '의뢰회사 원티드 계정',
-  })
-  @Column({ nullable: true })
-  greeting_id: string;
-
-  @ApiProperty({
-    example: '123qwe',
-    description: '의뢰회사 그리팅 계정 비밀번호',
-  })
-  @Column({ nullable: true })
-  greeting_password: string;
-
-  @ApiProperty({
-    example: '132bksadbvl489yelkjhjasl90121209',
-    description: '의뢰회사 그리팅 계정 API Key',
-  })
-  @Column({ nullable: true })
-  greeting_apiKey: string;
-
-  // 원티드 계정
-  @ApiProperty({
-    example: 'wantedId',
-    description: '원티드 계정',
-  })
-  @Column({ nullable: true })
-  wanted_id: string;
-
-  @ApiProperty({
-    example: 'wantedPassword',
-    description: '원티드 계정 비밀번호',
-  })
-  @Column({ nullable: true })
-  wanted_password: string;
-
   @OneToOne(() => UsersEntity, (users) => users.user_id)
   users: UsersEntity[];
-  @OneToMany(() => ApplicantEntity, (applicant) => applicant.company_id)
-  applicant: ApplicantEntity[];
 }
