@@ -93,16 +93,16 @@ export class UserController {
   // }
   //------------------------------------------------------------------//
 
-  // // (4) [Common] Logout
-  // @Post('/logout')
-  // @UseGuards(JwtServiceAuthGuard)
-  // @ApiOperation({
-  //   summary: '[일반] 로그아웃 API',
-  //   description: '[일반] 사용자 로그아웃',
-  // })
-  // async logout(@Body() logoutDto: LogoutDto) {
-  //   return await this.userService.logout(logoutDto);
-  // }
+  // (4) [Common] Logout
+  @Post('/logout')
+  @UseGuards(JwtServiceAuthGuard)
+  @ApiOperation({
+    summary: '[일반] 로그아웃 API',
+    description: '[일반] 사용자 로그아웃',
+  })
+  async logout(@Headers() header) {
+    return await this.authService.logout(header);
+  }
 
   // // (*) AuthGuard 테스트를 위한 임시 API
   // @Get('/mypage')

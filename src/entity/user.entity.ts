@@ -53,8 +53,8 @@ export class UsersEntity extends BaseEntity {
     example: 'TRUE',
     description: 'TRUE = 로그인된 상태',
   })
-  @Column({ nullable: true })
-  isLogin: string;
+  @Column({ default:false })
+  isLogin: Boolean;
 
   @ApiProperty({
     example: '약관동의서',

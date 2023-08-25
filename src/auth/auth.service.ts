@@ -33,6 +33,7 @@ export class AuthService {
       if (!isValidPassword)
         throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
       const accessToken = await this.loginServiceUser(email);
+      await this.userRepository.update({email:email}, {isLogin:true})
       return { accessToken, userInfo };
     } catch (err) {
       console.log(err);
@@ -97,13 +98,14 @@ export class AuthService {
       throw new err('토큰 디코딩에 실패하였습니다.');
     }
   }
-  // (4) 로그아웃시 accesstoken null 처리
-  // async updateAccessToken(email: string, accessToken: string | null) {
-  //   const existUser = await this.userRepository.findOne({ where: { email } });
-  //   if (accessToken === null) {
-  //     // existUser = null;
-  //   }
 
-  // await this.userRepository.save(existUser);
-  // return { result: true, message: '로그아웃 성공' };
-}
+
+
+
+  // () 로그아웃시 accesstoken null 처리
+  async logout(header) {
+    
+    const accessToken = null
+    
+  return accessToken ;
+}}
