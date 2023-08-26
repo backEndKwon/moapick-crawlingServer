@@ -12,7 +12,6 @@ import {
   LoginDto,
   LogoutDto,
   SignupDto,
-  addAgreementsDto,
   addCompanyInfoDto,
 } from 'src/dtos/user.dto';
 import { UserService } from './user.service';
@@ -46,8 +45,12 @@ export class UserController {
     description: '[일반] 사용자 로그인',
   })
   // @UseGuards(LocalServiceAuthGuard)
-  async login(@Body() loginDto: LoginDto, @Req() req: any) {
-    return await this.authService.commonLogin(loginDto);
+  async login(
+    @Body() loginDto: LoginDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return await this.authService.commonLogin(res, loginDto);
   }
 
   // ③ [Google] Login
@@ -79,14 +82,14 @@ export class UserController {
   }
 
   // ⑤ [약관동의서] agreement
-  @Post('/signup/addAgreement')
-  @ApiOperation({
-    summary: '[약관동의서]',
-    description: '[약관동의서]',
-  })
-  async addAgreements(@Body() body: addAgreementsDto): Promise<void> {
-    await this.userService.addAgreements(body);
-  }
+  // @Post('/signup/addAgreement')
+  // @ApiOperation({
+  //   summary: '[약관동의서]',
+  //   description: '[약관동의서]',
+  // })
+  // async addAgreements(@Body() body: addAgreementsDto): Promise<void> {
+  //   await this.userService.addAgreements(body);
+  // }
 
   // // (*) AuthGuard 테스트를 위한 임시 API
   // @Get('/dashboard')
