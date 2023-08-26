@@ -4,7 +4,6 @@ import {
   NotAcceptableException,
   ConflictException,
 } from '@nestjs/common';
-import { privateDecrypt } from 'crypto';
 import { UsersEntity } from 'src/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';

@@ -12,6 +12,7 @@ import {
   LoginDto,
   LogoutDto,
   SignupDto,
+  addAgreementsDto,
   addCompanyInfoDto,
 } from 'src/dtos/user.dto';
 import { UserService } from './user.service';
@@ -67,7 +68,7 @@ export class UserController {
     res.send(accessToken);
   }
 
- // ④ [addInfo] addCompanyInfo
+  // ④ [addInfo] addCompanyInfo
   @Post('/signup/addCompanyInfo')
   @ApiOperation({
     summary: '[추가정보] 추가정보받기 API',
@@ -75,7 +76,7 @@ export class UserController {
   })
   async addCompanyInfo(@Body() body: addCompanyInfoDto): Promise<void> {
     await this.userService.addCompanyInfo(body);
-  } 
+  }
 
   // ⑤ [약관동의서] agreement
   @Post('/signup/addAgreement')
@@ -85,8 +86,7 @@ export class UserController {
   })
   async addAgreements(@Body() body: addAgreementsDto): Promise<void> {
     await this.userService.addAgreements(body);
-  } 
-
+  }
 
   // // (*) AuthGuard 테스트를 위한 임시 API
   // @Get('/dashboard')
@@ -126,6 +126,4 @@ export class UserController {
   //   console.log('===========> controller~ Headers:', headers);
   //   return { result: true, message: 'mypage 조회 성공' };
   // }
-
- 
 }
