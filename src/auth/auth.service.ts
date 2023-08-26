@@ -33,7 +33,7 @@ export class AuthService {
       if (!isValidPassword)
         throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
       const accessToken = await this.loginServiceUser(email);
-      await this.userRepository.update({email:email}, {isLogin:true})
+      await this.userRepository.update({ email: email }, { isLogin: true });
       return { accessToken, userInfo };
     } catch (err) {
       console.log(err);
@@ -81,6 +81,8 @@ export class AuthService {
   async findUser(email: string) {
     try {
       const existUser = await this.userService.findByEmail(email);
+      existUser.isLogin = true;
+      await this.userRepository.save(existUser);
       if (!existUser) throw new ForbiddenException('존재하지 않는 계정입니다.');
       const { password, createdAt, updatedAt, ...result } = existUser;
       return existUser;
@@ -91,7 +93,7 @@ export class AuthService {
   async decodeToken(token: string) {
     try {
       const decoded = this.jwtService.decode(token);
-      console.log(decoded)
+      console.log(decoded);
       if (!decoded) throw new ForbiddenException('토큰이 존재하지 않습니다.');
       return decoded;
     } catch (err) {
@@ -99,13 +101,15 @@ export class AuthService {
     }
   }
 
-
-
-
   // () 로그아웃시 accesstoken null 처리
   async logout(header) {
-    
-    const accessToken = null
-    
-  return accessToken ;
-}}
+    const { email } = header;
+    const existUser = await this.userService.findByEmail(email);
+
+    existUser.isLogin = false;
+    await this.userRepository.save(existUser);
+    const accessToken = null;
+
+    return accessToken;
+  }
+}

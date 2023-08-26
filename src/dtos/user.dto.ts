@@ -19,9 +19,7 @@ export class SignupDto {
 
 // [추가정보] 추가정보 dto
 export class addCompanyInfoDto {
-  @ApiProperty({ description: 'DTO 전화번호' })
-  phone: string;
-
+  
   @ApiProperty({ description: 'DTO 전화번호' })
   companyName: string;
   
@@ -31,6 +29,21 @@ export class addCompanyInfoDto {
   
   @ApiProperty({ description: 'DTO email/user_id찾기위해' })
   email: string;
+}
+
+export class addAgreementsDto {
+  
+  @ApiProperty({ description: '' })
+  email: string;
+
+  @ApiProperty({ description: '' })
+  isTermsAgreement: Boolean;
+  
+  @ApiProperty({ description: '' })
+  isPrivacyPolicyAgreement: Boolean;
+  
+  @ApiProperty({ description: '' })
+  isMarketingAgreement: Boolean;
 }
 
 // [일반] 로그인 dto

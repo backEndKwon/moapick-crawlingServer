@@ -53,28 +53,28 @@ export class UsersEntity extends BaseEntity {
     example: 'TRUE',
     description: 'TRUE = 로그인된 상태',
   })
-  @Column({ default:false })
+  @Column({ default: false })
   isLogin: Boolean;
 
   @ApiProperty({
     example: '약관동의서',
     description: '약관동의서 확인여부',
   })
-  @Column({ nullable: true, default:false })
+  @Column({ nullable: true, default: false })
   isTermsAgreement: Boolean;
 
   @ApiProperty({
     example: '약관동의서2',
     description: '약관동의서2 확인여부',
   })
-  @Column({ nullable: true, default:false })
+  @Column({ nullable: true, default: false })
   isPrivacyPolicyAgreement: Boolean;
 
   @ApiProperty({
     example: '마케팅동의서',
     description: '마케팅동의서 확인여부',
   })
-  @Column({ nullable: true, default:false })
+  @Column({ nullable: true, default: false })
   isMarketingAgreement: Boolean;
 
   @ApiProperty({

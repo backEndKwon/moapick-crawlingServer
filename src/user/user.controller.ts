@@ -77,6 +77,17 @@ export class UserController {
     await this.userService.addCompanyInfo(body);
   } 
 
+  // ⑤ [약관동의서] agreement
+  @Post('/signup/addAgreement')
+  @ApiOperation({
+    summary: '[약관동의서]',
+    description: '[약관동의서]',
+  })
+  async addAgreements(@Body() body: addAgreementsDto): Promise<void> {
+    await this.userService.addAgreements(body);
+  } 
+
+
   // // (*) AuthGuard 테스트를 위한 임시 API
   // @Get('/dashboard')
   // @ApiOperation({
