@@ -106,7 +106,7 @@ export class AuthService {
       if (!decoded) throw new ForbiddenException('토큰이 존재하지 않습니다.');
       return decoded;
     } catch (err) {
-      throw new err('토큰 디코딩에 실패하였습니다.');
+      console.error('토큰 디코딩에 실패하였습니다.', err);
     }
   }
 
@@ -120,5 +120,16 @@ export class AuthService {
     const accessToken = null;
 
     return accessToken;
+  }
+
+  async verify(token: string) {
+    try {
+      const verifyToken = await this.jwtService.verify(token);
+      console.log('===========> ~ verifyToken:', verifyToken);
+      console.log('토큰 인증 성공!');
+      return verifyToken;
+    } catch (err) {
+      throw new UnauthorizedException('토큰이 존재하지 않습니다');
+    }
   }
 }

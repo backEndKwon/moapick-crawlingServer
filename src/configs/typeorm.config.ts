@@ -8,9 +8,9 @@ export const typeORMConfig = (
     type: 'postgres',
     host: configService.get<string>('DB_HOST', 'localhost'),
     port: configService.get<number>('DB_PORT'),
-    username: configService.get<string>('DB_USERNAME'), // 로컬 db
+    username: configService.get<string>('DB_USERNAME'), 
     password: configService.get<string>('DB_PASSWORD'),
-    database: configService.get<string>('DB_DATABASE'), //로컬 db
+    database: configService.get<string>('DB_DATABASE'), 
     entities: [__dirname + '/../**/*.entity.{js,ts}'],
     synchronize: configService.get<boolean>('DB_SYNCHRONIZE'),
   };

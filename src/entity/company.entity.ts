@@ -29,13 +29,6 @@ export class CompanyEntity extends BaseEntity {
   user_id: number;
 
   @ApiProperty({
-    example: '01012345678',
-    description: '회사 전화번호',
-  })
-  @Column()
-  phone: string;
-
-  @ApiProperty({
     example: '123-34-56789',
     description: '사업자 등록번호',
   })
@@ -55,6 +48,15 @@ export class CompanyEntity extends BaseEntity {
   })
   @CreateDateColumn()
   createdAt: Date;
+
+  
+  @ApiProperty({
+    example: '생략',
+    description: '업데이트 날짜 및 시간',
+  })
+  @CreateDateColumn()
+  updatedAt: Date;
+
 
   @OneToOne(() => UsersEntity, (users) => users.user_id)
   users: UsersEntity[];

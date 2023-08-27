@@ -54,51 +54,72 @@ export class UserService {
     if (!email) {
       throw new NotAcceptableException('이메일을 입력해주세요.');
     }
-
     if (!phone) {
       throw new NotAcceptableException('전화번호를 입력해주세요.');
     }
-
     if (!companyName) {
       throw new NotAcceptableException('회사명을 입력해주세요.');
     }
-    if (!email) {
+    if (!eid) {
       throw new NotAcceptableException('사업자번호를 입력해주세요.');
     }
     const existUser = await this.findByEmail(email);
     if (!existUser) {
       throw new NotAcceptableException('존재하지 않는 사용자입니다.');
     }
+    // ⓐ 전화번호는 user Table에 저장
+    existUser.phone = phone;
     await this.userRepository.save(existUser);
+
+    // ⓑ user Table 의 user_id와 eid, grade를 company Table에 저장하면서 새로운 행 생성
     const existUserId = existUser.user_id;
     const createCompanyInfo = this.companyRepository.create({
       user_id: existUserId,
-      phone,
       eid,
       grade: 'trial', //tiral은 2주 무료
     });
 
     await this.companyRepository.save(createCompanyInfo);
+    console.log('추가정보 저장 완료');
+  }
+  catch(err) {
+    console.log('사용자 추가정보 생성 및 저장 실패', err);
   }
 
-  // (5) 약관동의서 저장
-  //   async addAgreements(body: addAgreementsDto) {
-  //     const {
-  //       email,
-  //       isTermsAgreement,
-  //       isPrivacyPolicyAgreement,
-  //       isMarketingAgreement,
-  //     } = body;
-  //     const existUser = await this.userRepository.findOne({ where: { email } });
-  //     existUser.isTermsAgreement = isTermsAgreement;
-  //     (existUser.isPrivacyPolicyAgreement = isPrivacyPolicyAgreement),
-  //       (existUser.isMarketingAgreement = isMarketingAgreement);
-  //     try {
-  //       await this.userRepository.save(existUser);
-  //       console.log('약관동의서 저장 성공');
-  //     } catch (err) {
-  //       console.log('약관동의서 저장 실패', err);
-  //     }
-  //   }
-  // }
+  async getMypage(decodedToken: any) {
+    const email = decodedToken.email;
+    console.log("===========> ~ email:", email)
+    const userInfo = await this.findByEmail(email);
+    
+    const userId = userInfo.user_id
+    console.log("===========> ~ userId:", userId)
+    const companyInfo = await this.findCompanyInfo(userId);
+    console.log("===========> ~ companyInfo:", companyInfo)
+  return {userInfo,companyInfo}
+  }
+
+async findCompanyInfo(userId:number){
+  return await this.companyRepository.find({where:{user_id:userId}})
 }
+
+}
+// (5) 약관동의서 저장
+//   async addAgreements(body: addAgreementsDto) {
+//     const {
+//       email,
+//       isTermsAgreement,
+//       isPrivacyPolicyAgreement,
+//       isMarketingAgreement,
+//     } = body;
+//     const existUser = await this.userRepository.findOne({ where: { email } });
+//     existUser.isTermsAgreement = isTermsAgreement;
+//     (existUser.isPrivacyPolicyAgreement = isPrivacyPolicyAgreement),
+//       (existUser.isMarketingAgreement = isMarketingAgreement);
+//     try {
+//       await this.userRepository.save(existUser);
+//       console.log('약관동의서 저장 성공');
+//     } catch (err) {
+//       console.log('약관동의서 저장 실패', err);
+//     }
+//   }
+// }
