@@ -2,6 +2,7 @@ import {
   UnauthorizedException,
   Injectable,
   ForbiddenException,
+  Res,
 } from '@nestjs/common';
 import { UsersEntity } from 'src/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,7 +20,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
   // (1) [일반] 로그인
-  async commonLogin(user: LoginDto) {
+  async commonLogin(@Res() res: any, user: LoginDto) {
     // validateUser 까지 가능(validate 분리예정)
     try {
       const email = user.email;
@@ -34,7 +35,8 @@ export class AuthService {
         throw new UnauthorizedException('비밀번호가 일치하지 않습니다.');
       const accessToken = await this.loginServiceUser(email);
       await this.userRepository.update({ email: email }, { isLogin: true });
-      return { accessToken, userInfo };
+      const { password, ...result } = userInfo;
+      res.status(200).send({ accessToken, result });
     } catch (err) {
       console.log(err);
       throw new err('로그인에 실패하였습니다.');
@@ -84,8 +86,15 @@ export class AuthService {
       existUser.isLogin = true;
       await this.userRepository.save(existUser);
       if (!existUser) throw new ForbiddenException('존재하지 않는 계정입니다.');
-      const { password, createdAt, updatedAt, ...result } = existUser;
-      return existUser;
+      const {
+        createdAt,
+        updatedAt,
+        isMarketingAgreement,
+        isPrivacyPolicyAgreement,
+        isTermsAgreement,
+        ...result
+      } = existUser;
+      return result;
     } catch (err) {
       throw new err('사용자정보 반환에 실패하였습니다.');
     }

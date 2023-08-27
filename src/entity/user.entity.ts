@@ -43,13 +43,6 @@ export class UsersEntity extends BaseEntity {
   name: string;
 
   @ApiProperty({
-    example: '01012345678',
-    description: '사용자 전화번호',
-  })
-  @Column({ nullable: true })
-  phone: string;
-
-  @ApiProperty({
     example: 'TRUE',
     description: 'TRUE = 로그인된 상태',
   })

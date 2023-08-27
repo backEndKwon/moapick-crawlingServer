@@ -29,6 +29,13 @@ export class CompanyEntity extends BaseEntity {
   user_id: number;
 
   @ApiProperty({
+    example: '01012345678',
+    description: '회사 전화번호',
+  })
+  @Column()
+  phone: string;
+
+  @ApiProperty({
     example: '123-34-56789',
     description: '사업자 등록번호',
   })
