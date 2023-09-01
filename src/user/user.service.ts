@@ -6,12 +6,10 @@ import {
 import { UsersEntity } from 'src/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { addCompanyInfoDto } from 'src/dtos/user.dto';
+import { SignupDto, addCompanyInfoDto } from 'src/dtos/user.dto';
+import { ConfigService } from '@nestjs/config';
 import { CompanyEntity } from 'src/entity/company.entity';
-import { wantedLoginCheck } from 'src/crawling/checkWantedLogin';
-import { wantedCrawling } from 'src/crawling/wantedCrawling';
-import { tmpdir } from 'os';
-import { chromium } from 'playwright';
+import { AuthService } from 'src/auth/auth.service';
 @Injectable()
 export class UserService {
   constructor(
@@ -20,7 +18,6 @@ export class UserService {
     @InjectRepository(CompanyEntity)
     private readonly companyRepository: Repository<CompanyEntity>,
   ) {}
-
 
   // # 사용자 추가정보 및 회사정보 생성 및 저장
   async addCompanyInfo(body: addCompanyInfoDto) {
@@ -91,16 +88,5 @@ export class UserService {
   async findByEmail(email: string) {
     const existUser = await this.userRepository.findOne({ where: { email } });
     return existUser;
-  }
-
-  async getWantedLoginAndCrawling(email: string, password: string) {
-    // const appDir= app.getPath("userData")
-    const tempDir = tmpdir();
-    // await wantedLoginCheck(email, password);
-    const browserCenter = await chromium.launch({
-      headless: false,
-    });
-    const crawlingResult = await wantedCrawling(browserCenter,tempDir, email, password);
-    return crawlingResult;
   }
 }

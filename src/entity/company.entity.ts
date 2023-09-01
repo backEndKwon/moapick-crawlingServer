@@ -51,17 +51,15 @@ export class CompanyEntity extends BaseEntity {
     example: '생략',
     description: '생성날짜 및 시간',
   })
-  @CreateDateColumn({default :false})
+  @CreateDateColumn({ default: false })
   isPaid: boolean;
 
-  
   @ApiProperty({
     example: '생략',
     description: '업데이트 날짜 및 시간',
   })
   @UpdateDateColumn()
   updatedAt: Date;
-
 
   @OneToOne(() => UsersEntity, (users) => users.user_id)
   users: UsersEntity[];

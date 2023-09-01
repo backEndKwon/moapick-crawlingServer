@@ -3,16 +3,10 @@ import {
   Controller,
   Body,
   Post,
-  Req,
-  Res,
   UseGuards,
   Headers,
 } from '@nestjs/common';
-import {
-  LoginDto,
-  SignupDto,
-  addCompanyInfoDto,
-} from 'src/dtos/user.dto';
+import { LoginDto } from 'src/dtos/user.dto';
 import { UserService } from './user.service';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtServiceAuthGuard } from 'src/auth/guards/jwt-service.guard';
@@ -24,7 +18,6 @@ export class UserController {
     private readonly userService: UserService,
     private readonly authService: AuthService,
   ) {}
-
 
   // // (*) AuthGuard 테스트를 위한 임시 API
   @Get('/mypage')
@@ -41,13 +34,4 @@ export class UserController {
     console.log('mypage조회성공');
     return result;
   }
-
-  @Post('/wantedLogin')
-  async wantedLogin(@Body() body: LoginDto) {
-    const {email, password} = body;
-    
-    return this.userService.getWantedLoginAndCrawling(email, password);
-  }
-
-
 }

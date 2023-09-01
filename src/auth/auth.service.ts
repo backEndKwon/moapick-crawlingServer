@@ -1,12 +1,4 @@
-import {
-  UnauthorizedException,
-  Injectable,
-  ForbiddenException,
-  Res,
-  HttpStatus,
-  HttpException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, ForbiddenException, Res, BadRequestException, HttpStatus } from '@nestjs/common';
 import { UsersEntity } from 'src/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -17,7 +9,6 @@ import { validatePassword } from './validations/password.validate';
 import { JwtPayload } from './types/token.type';
 import { config } from 'dotenv';
 import { AuthException } from './exceptions/authException';
-import { HttpStatusCode } from 'axios';
 import * as argon from 'argon2';
 import { CompanyEntity } from 'src/entity/company.entity';
 
@@ -99,11 +90,14 @@ export class AuthService {
           '비밀번호가 일치하지 않습니다.',
           HttpStatus.UNAUTHORIZED,
         );
-          const user = await this.userRepository.findOne({where:{email:email}})
-      const accessToken = await this.signUpGenerateJwt(email,user.createdAt);
+      const user = await this.userRepository.findOne({
+        where: { email: email },
+      });
+      const accessToken = await this.signUpGenerateJwt(email, user.createdAt);
       await this.userRepository.update({ email: email }, { isLogin: true });
       const { password, ...result } = userInfo;
       res.status(200).send({ accessToken, result });
+      console.log('로그인에 성공하였습니다');
       console.log('로그인에 성공하였습니다');
     } catch (err) {
       console.log(err);
@@ -111,6 +105,7 @@ export class AuthService {
         '로그인에 실패하였습니다.',
         HttpStatus.UNAUTHORIZED,
       );
+      
     }
   }
 
@@ -142,10 +137,12 @@ export class AuthService {
       // # 추후 결제 여부 확인 로직
       // const isPaid = this.companyRepository.findOne({ where: { user_id } });
       // if(!isPaid) throw new AuthException('결제가 완료되지 않았습니다.', HttpStatus.UNAUTHORIZED);
-      
+
       const user = await this.userRepository.findOne({ where: { email } });
-      const company = await this.companyRepository.findOne({where:{user_id:user.user_id}})
-     
+      const company = await this.companyRepository.findOne({
+        where: { user_id: user.user_id },
+      });
+
       if ((company.isPaid = true)) {
         const accessTokenPayload: JwtPayload = {
           email,
@@ -155,12 +152,12 @@ export class AuthService {
         };
         //
         const paymentDate = new Date('2023-03-02'); // 사용자가 결제한 날짜
-const expiresAfterDays = 30; // 30일 만료 기간
-const expirationDate = new Date(paymentDate);
-expirationDate.setDate(paymentDate.getDate() + expiresAfterDays);
+        const expiresAfterDays = 30; // 30일 만료 기간
+        const expirationDate = new Date(paymentDate);
+        expirationDate.setDate(paymentDate.getDate() + expiresAfterDays);
 
-// 계산된 만료 날짜를 환경 변수에 설정
-process.env.JWT_EXPIRES_IN_BASIC = expirationDate.toISOString();
+        // 계산된 만료 날짜를 환경 변수에 설정
+        process.env.JWT_EXPIRES_IN_BASIC = expirationDate.toISOString();
         const accessToken = this.jwtService.signAsync(accessTokenPayload, {
           secret: process.env.JWT_SECRETKEY,
           expiresIn: parseInt(process.env.JWT_EXPIRES_IN_TRIAL),
