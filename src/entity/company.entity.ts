@@ -4,11 +4,9 @@ import {
   PrimaryGeneratedColumn,
   BaseEntity,
   CreateDateColumn,
-  OneToMany,
-  UpdateDateColumn,
   OneToOne,
+  UpdateDateColumn,
 } from 'typeorm';
-//   import { PostsEntity } from '../posts/posts.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { UsersEntity } from './user.entity';
 
@@ -54,7 +52,7 @@ export class CompanyEntity extends BaseEntity {
     example: '생략',
     description: '업데이트 날짜 및 시간',
   })
-  @CreateDateColumn()
+  @UpdateDateColumn()
   updatedAt: Date;
 
 

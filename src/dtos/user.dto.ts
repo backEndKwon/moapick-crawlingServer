@@ -5,14 +5,13 @@ import { UsersEntity } from 'src/entity/user.entity';
 
 // [일반] 회원가입 dto
 export class SignupDto {
+  @ApiProperty({ description: 'DTO 이름' })
+  name: string;
   @ApiProperty({ description: 'DTO 이메일' })
   email: string;
 
   @ApiProperty({ description: 'DTO 비밀번호' })
   password: string;
-
-  @ApiProperty({ description: 'DTO 이름' })
-  name: string;
 
   @ApiProperty({ description: '' })
   isTermsAgreement: Boolean;
@@ -23,7 +22,7 @@ export class SignupDto {
   @ApiProperty({ description: '' })
   isMarketingAgreement: Boolean;
 
-  hashedAccessToken?: string | null | undefined;
+  accessToken?: string | null | undefined;
 }
 
 // [추가정보] 추가정보 dto
@@ -51,6 +50,7 @@ export class GoogleLoginDto extends PickType(UsersEntity, ['email', 'name']) {}
 export class LogoutDto {
   @ApiProperty({ description: 'DTO 이메일' })
   email: string;
+  accessToken?: string | null | undefined;
 }
 
 // export class RefreshTokensDto {

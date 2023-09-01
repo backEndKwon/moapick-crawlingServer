@@ -4,11 +4,9 @@ import {
   PrimaryGeneratedColumn,
   BaseEntity,
   CreateDateColumn,
-  OneToMany,
   UpdateDateColumn,
   OneToOne,
 } from 'typeorm';
-//   import { PostsEntity } from '../posts/posts.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { CompanyEntity } from './company.entity';
 
@@ -90,6 +88,8 @@ export class UsersEntity extends BaseEntity {
   })
   @UpdateDateColumn()
   updatedAt: Date;
+
+  accessToken?: string | null | undefined;
 
   @OneToOne(() => CompanyEntity, (company) => company.user_id)
   company: CompanyEntity[];
