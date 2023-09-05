@@ -50,20 +50,20 @@ export class AuthController {
     return await this.authService.commonLogin(res, loginDto);
   }
 
-  // ③ [Google] Login
-  @Post('/login/google')
-  @ApiOperation({
-    summary: '[구글] 로그인',
-    description:
-      '[구글] 구글로그인시 사용자의 email, name를 서버로 받아와 DB저장후 자체 AccessToken발급',
-  })
-  async googleLogin(
-    @Body() body: GoogleLoginDto,
-    @Res() res: any,
-  ): Promise<any> {
-    const { email, name } = body; //FE에서 받아온 email
-    return await this.authService.googleLogin(res, email, name);
-  }
+  // // ③ [Google] Login
+  // @Post('/login/google')
+  // @ApiOperation({
+  //   summary: '[구글] 로그인',
+  //   description:
+  //     '[구글] 구글로그인시 사용자의 email, name를 서버로 받아와 DB저장후 자체 AccessToken발급',
+  // })
+  // async googleLogin(
+  //   @Body() body: GoogleLoginDto,
+  //   @Res() res: any,
+  // ): Promise<any> {
+  //   const { email, name } = body; //FE에서 받아온 email
+  //   return await this.authService.googleLogin(res, email, name);
+  // }
 
   // ④ [addInfo] addCompanyInfo
   @Post('/signup/addCompanyInfo')

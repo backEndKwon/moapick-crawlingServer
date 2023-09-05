@@ -47,6 +47,13 @@ export class CompanyEntity extends BaseEntity {
   @CreateDateColumn()
   createdAt: Date;
 
+  @ApiProperty({
+    example: '생략',
+    description: '생성날짜 및 시간',
+  })
+  @CreateDateColumn({default :false})
+  isPaid: boolean;
+
   
   @ApiProperty({
     example: '생략',

@@ -4,13 +4,11 @@ import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersEntity } from 'src/entity/user.entity';
 import { PassportModule } from '@nestjs/passport';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { JwtServiceStrategy } from './strategy/jwt-service.strategy';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import { CompanyEntity } from 'src/entity/company.entity';
-import { Repository } from 'typeorm';
-import { UserModule } from 'src/user/user.module';
 // import { LocalServiceStrategy } from './guards/local-service.guard';
 @Module({
   controllers: [AuthController],
@@ -22,9 +20,6 @@ import { UserModule } from 'src/user/user.module';
         return {
           global: true,
           secret: configService.get<string>('JWT_SECRET'),
-          signOptions: {
-            expiresIn: configService.get<string>('JWT_EXPIRES_IN'),
-          },
         };
       },
       inject: [ConfigService],

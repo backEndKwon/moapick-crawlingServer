@@ -1,21 +1,19 @@
 import {
   Injectable,
-  HttpStatus,
-  NotAcceptableException,
-  ConflictException,
   NotFoundException,
-  ForbiddenException,
   BadRequestException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { UsersEntity } from 'src/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
-import { SignupDto, addCompanyInfoDto } from 'src/dtos/user.dto';
-import { ConfigService } from '@nestjs/config';
+import { Repository } from 'typeorm';
+import { addCompanyInfoDto } from 'src/dtos/user.dto';
 import { CompanyEntity } from 'src/entity/company.entity';
-import { AuthService } from 'src/auth/auth.service';
-import { NOTFOUND } from 'dns';
+import { wantedLoginCheck } from 'src/crawling/checkWantedLogin';
+import { wantedCrawling } from 'src/crawling/wantedCrawling';
+import { homedir } from 'os';
+import { join } from 'path';
+import { app } from 'electron';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -95,5 +93,15 @@ export class UserService {
   async findByEmail(email: string) {
     const existUser = await this.userRepository.findOne({ where: { email } });
     return existUser;
+  }
+
+  async getWantedLoginAndCrawling(email: string, password: string) {
+    console.log("===========> ~ 서버email:", email,password);
+    // const appDir= app.getPath("userData")
+    const appDir=  join(homedir(), 'userData');
+    // await wantedLoginCheck(email, password);
+    const crawlingResult = await wantedCrawling(appDir, email, password);
+    console.log("===========> ~ crawlingResult:", crawlingResult)
+    return crawlingResult;
   }
 }

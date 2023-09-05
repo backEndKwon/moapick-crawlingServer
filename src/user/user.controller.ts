@@ -41,4 +41,13 @@ export class UserController {
     console.log('mypage조회성공');
     return result;
   }
+
+  @Post('/wantedLogin')
+  async wantedLogin(@Body() body: LoginDto) {
+    const {email, password} = body;
+    
+    return this.userService.getWantedLoginAndCrawling(email, password);
+  }
+
+
 }
