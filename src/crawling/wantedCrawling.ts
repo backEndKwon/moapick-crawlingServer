@@ -2,7 +2,6 @@ import { Browser, Page, chromium } from "playwright";
 import { config } from "dotenv";
 import { uploadFileDownload, uploadFilePreview } from "../lib/aws";
 import * as fs from 'fs';
-
 config();
 
 const buttonSelector = {
@@ -97,7 +96,7 @@ async function getUserCardsId(page, postId) {
 }
 
 //지원자 이력서 다운로드 및 정보 가져오기
-async function saveUserResume(appDir, page, postId) {
+async function saveUserResume(tmpdir, page, postId) {
   const url = `https://www.wanted.co.kr/dashboard/recruitment/${postId}?application=is_exclude_reject`;
   await page.goto(url);
 
@@ -146,17 +145,21 @@ async function saveUserResume(appDir, page, postId) {
     userInfo["chk_time"] = data.data.chk_time;
 
     allUserInfo.push(userInfo);
-
+    
+    
     const [download] = await Promise.all([
       page.waitForEvent("download"), // wait for download to start
       page.click('button:has-text("다운로드")'),
     ]);
 
+
+
+
+
     const fileName = await download.suggestedFilename();
-    const path = `${appDir}/${fileName}`;
-    const abc = await download.saveAs(path);
-    console.log("===========> ~ abc:", abc)
-    console.log("===========> ~ path:", path)
+    
+    const path = `${tmpdir}/${fileName}`;
+    await download.saveAs(path);
     const downloadUrl = await uploadFileDownload(path);
     console.log(
       "🚀 ~ file: wantedCrawling.js:159 ~ saveUserResume ~ dowloadUrl:",
@@ -193,7 +196,6 @@ export async function wantedCrawling(appDir, ID, PW) {
 
   for (let postId of ["174982"]) {
     const userInfoByJobPosting = await saveUserResume(appDir, page, postId);
-    console.log("===========> ~ userInfoByJobPosting:", userInfoByJobPosting)
 
     allUserInfo.push(userInfoByJobPosting);
   }
