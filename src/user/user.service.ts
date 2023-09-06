@@ -8,9 +8,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { addCompanyInfoDto } from 'src/dtos/user.dto';
 import { CompanyEntity } from 'src/entity/company.entity';
+import { wantedLoginCheck } from 'src/crawling/checkWantedLogin';
 import { wantedCrawling } from 'src/crawling/wantedCrawling';
 import { tmpdir } from 'os';
-
+import { chromium } from 'playwright';
 @Injectable()
 export class UserService {
   constructor(
@@ -93,12 +94,13 @@ export class UserService {
   }
 
   async getWantedLoginAndCrawling(email: string, password: string) {
-    console.log("===========> ~ 서버email:", email,password);
     // const appDir= app.getPath("userData")
     const tempDir = tmpdir();
     // await wantedLoginCheck(email, password);
-    const crawlingResult = await wantedCrawling(tempDir, email, password);
-    console.log("===========> ~ crawlingResult:", crawlingResult)
+    const browserCenter = await chromium.launch({
+      headless: false,
+    });
+    const crawlingResult = await wantedCrawling(browserCenter,tempDir, email, password);
     return crawlingResult;
   }
 }
