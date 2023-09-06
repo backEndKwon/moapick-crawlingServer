@@ -20,6 +20,13 @@ export class CompanyEntity extends BaseEntity {
   company_id: number;
 
   @ApiProperty({
+    example: "스파르파스타",
+    description: '회사명',
+  })
+  @Column()
+  companyName: string;
+
+  @ApiProperty({
     example: 1,
     description: 'User테이블의 고유한 user_id로 Company와 1:1연결',
   })

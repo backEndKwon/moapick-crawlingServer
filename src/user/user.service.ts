@@ -46,6 +46,7 @@ export class UserService {
       // ⓑ user Table 의 user_id와 eid, grade를 company Table에 저장하면서 새로운 행 생성
       const existUserId = existUser.user_id;
       const createCompanyInfo = this.companyRepository.create({
+        companyName,
         user_id: existUserId,
         eid,
         grade: 'trial', //tiral은 2주 무료
