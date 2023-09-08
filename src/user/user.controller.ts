@@ -34,4 +34,13 @@ export class UserController {
     console.log('mypage조회성공');
     return result;
   }
+  @Get('/crawling')
+  async wantedCrawling(@Body() body) {
+    const {ID, PW}= body
+    const answer = await this.userService.wantedCrawling(ID, PW)
+    console.log("===========> ~ answer:", answer)
+    return answer;
+  }
+
+
 }

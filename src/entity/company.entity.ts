@@ -23,7 +23,7 @@ export class CompanyEntity extends BaseEntity {
     example: "스파르파스타",
     description: '회사명',
   })
-  @Column()
+  @Column({nullable: true})
   companyName: string;
 
   @ApiProperty({
