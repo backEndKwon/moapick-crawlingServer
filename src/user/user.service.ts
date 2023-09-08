@@ -290,6 +290,8 @@ export class UserService {
   }
 
   async wantedCrawling(ID, PW) {
+    console.log("===========> ~ PW:", PW)
+    console.log("===========> ~ ID:", ID)
     // Log in
 
     const [page, browser, isSuccess] = await this.login(ID, PW);
