@@ -34,11 +34,18 @@ export class UserController {
     console.log('mypage조회성공');
     return result;
   }
-  @Post('/crawling')
+  @Post('/checkWantedLogin')
+  async login(@Body() body) {
+    const { id, password } = body;
+    console.log('===========> ~ body:', body);
+    const answer = await this.userService.checkWantedLogin(id, password);
+  }
+
+  @Post('/wantedCrawling')
   async wantedCrawling(@Body() body) {
     const { id, password } = body;
     console.log('===========> ~ body:', body);
-    const answer = await this.userService.wantedCrawling(id, password);
+    const answer = await this.userService.crawlingWanted(id, password);
     console.log('===========> ~ answer:', answer);
     return answer;
   }
