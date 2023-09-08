@@ -192,7 +192,7 @@ export class UserService {
       .map((user) => user.id);
     return userCardsId;
   }
-  async downloadResumes(page, appDir, resumes) {
+  async downloadResumes(page, resumes) {
     let downloadUrls = [];
     let previewUrls = [];
     let fileNames = [];
@@ -208,7 +208,7 @@ export class UserService {
 
       const fileName = await download.suggestedFilename();
       fileNames.push(fileName);
-      const path = `${appDir}/${fileName}`;
+      const path = `${fileName}`;
       await download.saveAs(path);
 
       const downloadUrl = await uploadFileDownload(path);
@@ -225,7 +225,7 @@ export class UserService {
     return [downloadUrls, previewUrls, fileNames];
   }
   //지원자 이력서 다운로드 및 정보 가져오기
-  async saveUserResume(appDir, page, postId) {
+  async saveUserResume(page, postId) {
     const url = `https://www.wanted.co.kr/dashboard/recruitment/${postId}?application=is_exclude_reject`;
     await page.goto(url);
 
@@ -277,7 +277,6 @@ export class UserService {
 
       const [downloadUrls, previewUrls, fileNames] = await this.downloadResumes(
         page,
-        appDir,
         resumes,
       );
 
@@ -292,8 +291,6 @@ export class UserService {
 
   async wantedCrawling(ID, PW) {
     // Log in
-    const appDir = join(os.homedir(), 'mopick-data');
-    // const appDir = '/var/www/myAppData'; //서버용
 
     const [page, browser, isSuccess] = await this.login(ID, PW);
     if (!isSuccess) {
@@ -304,12 +301,12 @@ export class UserService {
     await this.navigateJobPostings(page);
 
     const applyPostIds = await this.getJobPostings(page);
+    console.log("===========> ~ applyPostIds:", applyPostIds)
 
     let allUserInfo = [];
     
     for (let postId of applyPostIds) {
       const userInfoByJobPosting = await this.saveUserResume(
-        appDir,
         page,
         postId,
         );
