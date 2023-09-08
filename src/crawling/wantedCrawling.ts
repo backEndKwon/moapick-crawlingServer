@@ -12,17 +12,7 @@ const buttonSelector = {
 };
 
 //로그인
-export async function login(ID, PW) {
-  const browser = await chromium.launch({
-    headless: true,
-  });
-  const userAgent =
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36';
-  const context = await browser.newContext({ userAgent });
-  context.setDefaultNavigationTimeout(0);
-  context.setDefaultTimeout(0);
-
-  const page = await context.newPage();
+export async function login(page, ID: string, PW: string) {
   try {
     await page.goto(
       'https://id.wanted.jobs/login?before_url=https%3A%2F%2Fwww.wanted.co.kr%2Fdashboard%2Fuser%2Fcheck&redirect_url=https%3A%2F%2Fwww.wanted.co.kr%2Fapi%2Fchaos%2Fauths%2Fv1%2Fcallback%2Fset-token&client_id=3cxYxwiZG2Hys8DvQjwJzxMm&service=dashboard&amp_device_id=undefined',
@@ -36,10 +26,10 @@ export async function login(ID, PW) {
     console.log('로그인 성공');
 
     await page.waitForNavigation();
-    return [page, browser, true];
+    return true;
   } catch (error) {
     console.log(error);
-    return [page, browser, false];
+    return false;
   }
 }
 
@@ -132,7 +122,7 @@ async function downloadResumes(page, resumes) {
   return [downloadUrls, previewUrls, fileNames];
 }
 //지원자 이력서 다운로드 및 정보 가져오기
-async function saveUserResume(appDir, page, postId) {
+async function saveUserResume(page, postId) {
   const url = `https://www.wanted.co.kr/dashboard/recruitment/${postId}?application=is_exclude_reject`;
   await page.goto(url);
 
@@ -193,9 +183,19 @@ async function saveUserResume(appDir, page, postId) {
   return allUserInfo;
 }
 
-export async function wantedCrawling(appDir, ID, PW) {
+export async function wantedCrawling(ID, PW) {
+  const browser = await chromium.launch({
+    headless: true,
+  });
+  const userAgent =
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36';
+  const context = await browser.newContext({ userAgent });
+  context.setDefaultNavigationTimeout(0);
+  context.setDefaultTimeout(0);
+
+  const page = await context.newPage();
   // Log in
-  const [page, browser] = await login(ID, PW);
+  await login(page, ID, PW);
 
   await navigateJobPostings(page);
 
@@ -204,7 +204,7 @@ export async function wantedCrawling(appDir, ID, PW) {
   let allUserInfo = [];
 
   for (let postId of applyPostIds) {
-    const userInfoByJobPosting = await saveUserResume(appDir, page, postId);
+    const userInfoByJobPosting = await saveUserResume(page, postId);
 
     allUserInfo.push(userInfoByJobPosting);
   }
