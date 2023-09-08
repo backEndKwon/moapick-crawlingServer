@@ -95,10 +95,10 @@ export class UserService {
   }
 
   async crawlingWanted(id: string, password: string) {
-    await wantedCrawling(id, password);
+    return await wantedCrawling(id, password);
   }
 
   async checkWantedLogin(ID: string, PW: string) {
-    await wantedLoginCheck(ID, PW);
+    return await wantedLoginCheck(ID, PW);
   }
 }

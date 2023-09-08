@@ -38,7 +38,7 @@ export class UserController {
   async login(@Body() body) {
     const { id, password } = body;
     console.log('===========> ~ body:', body);
-    const answer = await this.userService.checkWantedLogin(id, password);
+    return await this.userService.checkWantedLogin(id, password);
   }
 
   @Post('/wantedCrawling')
