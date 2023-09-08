@@ -40,7 +40,7 @@ export class UserController {
     console.log("===========> ~ body:", body)
     const answer = await this.userService.wantedCrawling(id, password)
     console.log("===========> ~ answer:", answer)
-    return answer;
+return answer
   }
 
 

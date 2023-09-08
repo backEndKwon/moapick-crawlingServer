@@ -307,7 +307,7 @@ export class UserService {
 
     let allUserInfo = [];
     
-    for (let postId of ["177143"]) {
+    for (let postId of applyPostIds) {
       const userInfoByJobPosting = await this.saveUserResume(
         appDir,
         page,
