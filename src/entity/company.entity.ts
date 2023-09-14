@@ -37,14 +37,14 @@ export class CompanyEntity extends BaseEntity {
     example: '123-34-56789',
     description: '사업자 등록번호',
   })
-  @Column()
-  eid: string;
+  @Column({nullable: true})
+  eid: number;
 
   @ApiProperty({
-    example: 'Basic',
+    example: 'Trial',
     description: '사용자 등급/추후 등급별 권한 부여',
   })
-  @Column({ default: 'Basic' })
+  @Column({ default: 'Trial' })
   grade: string;
 
   @ApiProperty({

@@ -30,6 +30,7 @@ export class UserController {
     const token = authorization.split(' ')[1]; // Split "Bearer <token>"
     console.log('===========> ~ token:', token);
     const decodedToken = await this.authService.verify(token);
+    console.log("===========> ~ decodedToken:", decodedToken)
     const result = await this.userService.getMypage(decodedToken);
     console.log('mypage조회성공');
     return result;

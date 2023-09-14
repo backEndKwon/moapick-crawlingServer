@@ -46,7 +46,7 @@ export class UserService {
         throw new NotFoundException('존재하지 않는 사용자입니다.');
       }
       // ⓐ 전화번호는 user Table에 저장
-      existUser.phone = phone;
+      existUser.phone = Number(phone);
       await this.userRepository.save(existUser);
 
       // ⓑ user Table 의 user_id와 eid, grade를 company Table에 저장하면서 새로운 행 생성
@@ -54,7 +54,7 @@ export class UserService {
       const createCompanyInfo = this.companyRepository.create({
         companyName,
         user_id: existUserId,
-        eid,
+        eid: Number(eid),
         grade: 'trial', //tiral은 2주 무료
       });
 
@@ -72,6 +72,7 @@ export class UserService {
   async getMypage(decodedToken: any) {
     try {
       const email = decodedToken.email;
+      console.log('===========> ~ email:', email);
       const userInfo = await this.findByEmail(email);
       if (!userInfo) {
         throw new NotFoundException('존재하지 않는 사용자입니다.');
@@ -290,8 +291,8 @@ export class UserService {
   }
 
   async wantedCrawling(ID, PW) {
-    console.log("===========> ~ PW:", PW)
-    console.log("===========> ~ ID:", ID)
+    console.log('===========> ~ PW:', PW);
+    console.log('===========> ~ ID:', ID);
     // Log in
 
     const [page, browser, isSuccess] = await this.login(ID, PW);
@@ -303,21 +304,18 @@ export class UserService {
     await this.navigateJobPostings(page);
 
     const applyPostIds = await this.getJobPostings(page);
-    console.log("===========> ~ applyPostIds:", applyPostIds)
+    console.log('===========> ~ applyPostIds:', applyPostIds);
 
     let allUserInfo = [];
-    
-    for (let postId of applyPostIds) {
-      const userInfoByJobPosting = await this.saveUserResume(
-        page,
-        postId,
-        );
-        
-        allUserInfo.push(userInfoByJobPosting);
-      }
-      console.log("===========> ~ allUserInfo:", allUserInfo)
 
-        // await browser.close();
-        return allUserInfo;
+    for (let postId of applyPostIds) {
+      const userInfoByJobPosting = await this.saveUserResume(page, postId);
+
+      allUserInfo.push(userInfoByJobPosting);
+    }
+    console.log('===========> ~ allUserInfo:', allUserInfo);
+
+    // await browser.close();
+    return allUserInfo;
   }
 }

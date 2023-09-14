@@ -37,9 +37,6 @@ export class AuthService {
     if (!signupDto.password) {
       throw new BadRequestException('비밀번호를 입력하세요');
     }
-    if (!signupDto) {
-      throw new BadRequestException('이미 존재하는 사용자입니다.');
-    }
 
     try {
       const hashedPassword = await await argon.hash(signupDto.password);
