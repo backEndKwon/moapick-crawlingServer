@@ -8,6 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SignupDto, addCompanyInfoDto } from 'src/dtos/user.dto';
 import { CompanyEntity } from 'src/entity/company.entity';
+import { wantedCrawling } from 'src/crawling/wantedCrawling';
+import { wantedLoginCheck } from 'src/crawling/checkWantedLogin';
 
 @Injectable()
 export class UserService {
@@ -95,4 +97,16 @@ export class UserService {
     return existUser;
   }
 
+  async crawlingWanted(id: string, password: string) {
+    await wantedCrawling(id, password);
+    return await wantedCrawling(id, password);
+  }
+
+  async checkWantedLogin(ID: string, PW: string) {
+    await wantedLoginCheck(ID, PW);
+    return await wantedLoginCheck(ID, PW);
+  }
+
+
+  
 }
