@@ -6,12 +6,10 @@ import {
   UseGuards,
   Headers,
 } from '@nestjs/common';
-import { LoginDto } from 'src/dtos/user.dto';
 import { UserService } from './user.service';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtServiceAuthGuard } from 'src/auth/guards/jwt-service.guard';
 import { ApiOperation } from '@nestjs/swagger';
-import { GoogleLoginDto } from 'src/dtos/user.dto';
 @Controller('user')
 export class UserController {
   constructor(
@@ -19,37 +17,36 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
-  // // (*) AuthGuard 테스트를 위한 임시 API
   @Get('/mypage')
   @ApiOperation({
-    summary: '[일반] 본인 정보조회',
-    description: '[일반] 본인 세부정보 조회, accessToken 인증',
+    summary: '[일반] 내 정보조회',
+    description: '[일반] 본인 및 회사 정보 조회, verify까지는 필요 없음',
   })
   // @UseGuards(JwtServiceAuthGuard)
   async getMypage(@Headers('authorization') authorization: string) {
-    const token = authorization.trim().split(' ')[1]; // Split "Bearer <token>"
-    console.log('===========> ~ token:', token);
+    const token = authorization.split(' ')[1];
     const decodedToken = await this.authService.decodeToken(token);
-    console.log("===========> ~ decodedToken:", decodedToken)
     const result = await this.userService.getMypage(decodedToken);
     console.log('mypage조회성공');
     return result;
   }
+
   @Post('/checkWantedLogin')
+  @ApiOperation({
+    summary: '[크롤링-원티드]로그인 체크용',
+    description: '원티드 id, password를 받아서 회원정보 맞는지 체크',
+  })
   async login(@Body() body) {
-    const { id, password } = body;
-    console.log('===========> ~ body:', body);
-    const answer = await this.userService.checkWantedLogin(id, password);
-    return await this.userService.checkWantedLogin(id, password);
+    return await this.userService.checkWantedLogin(body.id, body.password);
   }
 
   @Post('/wantedCrawling')
+  @ApiOperation({
+    summary: '[크롤링-원티드]지원자 가져오기용',
+    description: '원티드로 지원한 지원자 정보 가져오기',
+  })
   async wantedCrawling(@Body() body) {
-    const { id, password } = body;
-    console.log('===========> ~ body:', body);
-    const answer = await this.userService.crawlingWanted(id, password);
-    console.log('===========> ~ answer:', answer);
-    return answer;
+    return await this.userService.crawlingWanted(body.id, body.password);
   }
 
 }

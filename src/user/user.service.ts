@@ -67,7 +67,7 @@ export class UserService {
   async getMypage(decodedToken: any) {
     try {
       const email = decodedToken.email;
-      console.log('===========> ~ email:', email);
+      // console.log('===========> ~ email:', email);
       const userInfo = await this.findByEmail(email);
       if (!userInfo) {
         throw new NotFoundException('존재하지 않는 사용자입니다.');
@@ -77,13 +77,16 @@ export class UserService {
       if (!companyInfo) {
         throw new NotFoundException('존재하지 않는 회사정보입니다.');
       }
-      const user_name = userInfo.name
-      const user_email = userInfo.email
-      const user_userId = userInfo.user_id
 
-      return { user_name, user_email, user_userId, companyInfo };
+      //민석님 요청사항 : 따로 빼서 보내주기
+      const user_name = userInfo.name;
+      const user_email = userInfo.email;
+      const user_userId = userInfo.user_id;
+      const company = companyInfo[0]
+      const result = { ...company, user_name, user_email, user_userId };
+    return result;
     } catch (err) {
-      console.log('사용자 정보조회 실패', err);
+      throw new NotFoundException('내 정보조회에 실패하였습니다.');
     }
   }
 
@@ -98,15 +101,10 @@ export class UserService {
   }
 
   async crawlingWanted(id: string, password: string) {
-    await wantedCrawling(id, password);
     return await wantedCrawling(id, password);
   }
 
   async checkWantedLogin(ID: string, PW: string) {
-    await wantedLoginCheck(ID, PW);
     return await wantedLoginCheck(ID, PW);
   }
-
-
-  
 }
