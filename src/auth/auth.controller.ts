@@ -36,19 +36,19 @@ export class AuthController {
     return await this.authService.signUp(res, signupDto);
   }
 
-  // ② [Common] Login
-  @Post('/login')
-  @ApiOperation({
-    summary: '[일반] 로그인 API',
-    description: '[일반] 사용자 로그인',
-  })
-  // @UseGuards(LocalServiceAuthGuard)
-  async login(
-    @Body() loginDto: LoginDto,
-    @Res() res: Response,
-  ) {
-    return await this.authService.commonLogin(res, loginDto);
-  }
+  // // ② [Common] Login
+  // @Post('/login')
+  // @ApiOperation({
+  //   summary: '[일반] 로그인 API',
+  //   description: '[일반] 사용자 로그인',
+  // })
+  // // @UseGuards(LocalServiceAuthGuard)
+  // async login(
+  //   @Body() loginDto: LoginDto,
+  //   @Res() res: Response,
+  // ) {
+  //   return await this.authService.commonLogin(res, loginDto);
+  // }
 
   // // ③ [Google] Login
   // @Post('/login/google')

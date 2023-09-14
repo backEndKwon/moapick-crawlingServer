@@ -25,11 +25,11 @@ export class UserController {
     summary: '[일반] 본인 정보조회',
     description: '[일반] 본인 세부정보 조회, accessToken 인증',
   })
-  @UseGuards(JwtServiceAuthGuard)
+  // @UseGuards(JwtServiceAuthGuard)
   async getMypage(@Headers('authorization') authorization: string) {
-    const token = authorization.split(' ')[1]; // Split "Bearer <token>"
+    const token = authorization.trim().split(' ')[1]; // Split "Bearer <token>"
     console.log('===========> ~ token:', token);
-    const decodedToken = await this.authService.verify(token);
+    const decodedToken = await this.authService.decodeToken(token);
     console.log("===========> ~ decodedToken:", decodedToken)
     const result = await this.userService.getMypage(decodedToken);
     console.log('mypage조회성공');

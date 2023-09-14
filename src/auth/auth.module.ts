@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersEntity } from 'src/entity/user.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtServiceStrategy } from './strategy/jwt-service.strategy';
+// import { JwtServiceStrategy } from './strategy/jwt-service.strategy';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import { CompanyEntity } from 'src/entity/company.entity';
@@ -20,12 +20,13 @@ import { CompanyEntity } from 'src/entity/company.entity';
         return {
           global: true,
           secret: configService.get<string>('JWT_SECRETKEY'),
+          expiresIn: configService.get<string>('JWT_EXPIRATION_IN_TRIAL'),
         };
       },
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, JwtServiceStrategy, UserService], // Add UserService here
+  providers: [AuthService, UserService], // Add UserService here
   exports: [AuthService],
 })
 export class AuthModule {}

@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException, Res, BadRequestException, HttpStatus } from '@nestjs/common';
+import { Injectable, ForbiddenException, Res, BadRequestException, HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { UsersEntity } from 'src/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -60,6 +60,7 @@ export class AuthService {
         signupDto.email,
         user.createdAt,
       );
+      console.log("===========> ~ accessToken:", accessToken)
       return res
         .status(HttpStatus.CREATED)
         .json({ message: '회원가입 성공', accessToken });
@@ -70,41 +71,41 @@ export class AuthService {
     }
   }
 
-  // # [일반] 로그인
-  async commonLogin(@Res() res: any, loginDto: LoginDto) {
-    // validateUser 까지 가능(validate 분리예정)
-    try {
-      const email = loginDto.email;
-      const loginUserPassword = loginDto.password;
-      const userInfo = await this.findUser(email);
-      const existUserPassword = userInfo.password;
-      const isValidPassword = await validatePassword(
-        existUserPassword,
-        loginUserPassword,
-      );
-      if (!isValidPassword)
-        throw new AuthException(
-          '비밀번호가 일치하지 않습니다.',
-          HttpStatus.UNAUTHORIZED,
-        );
-      const user = await this.userRepository.findOne({
-        where: { email: email },
-      });
-      const accessToken = await this.signUpGenerateJwt(email, user.createdAt);
-      await this.userRepository.update({ email: email }, { isLogin: true });
-      const { password, ...result } = userInfo;
-      res.status(200).send({ accessToken, result });
-      console.log('로그인에 성공하였습니다');
-      console.log('로그인에 성공하였습니다');
-    } catch (err) {
-      console.log(err);
-      throw new AuthException(
-        '로그인에 실패하였습니다.',
-        HttpStatus.UNAUTHORIZED,
-      );
+  // // # [일반] 로그인
+  // async commonLogin(@Res() res: any, loginDto: LoginDto) {
+  //   // validateUser 까지 가능(validate 분리예정)
+  //   try {
+  //     const email = loginDto.email;
+  //     const loginUserPassword = loginDto.password;
+  //     const userInfo = await this.findUser(email);
+  //     const existUserPassword = userInfo.password;
+  //     const isValidPassword = await validatePassword(
+  //       existUserPassword,
+  //       loginUserPassword,
+  //     );
+  //     if (!isValidPassword)
+  //       throw new AuthException(
+  //         '비밀번호가 일치하지 않습니다.',
+  //         HttpStatus.UNAUTHORIZED,
+  //       );
+  //     const user = await this.userRepository.findOne({
+  //       where: { email: email },
+  //     });
+  //     const accessToken = await this.signUpGenerateJwt(email, user.createdAt);
+  //     await this.userRepository.update({ email: email }, { isLogin: true });
+  //     const { password, ...result } = userInfo;
+  //     res.status(200).send({ accessToken, result });
+  //     console.log('로그인에 성공하였습니다');
+  //     console.log('로그인에 성공하였습니다');
+  //   } catch (err) {
+  //     console.log(err);
+  //     throw new AuthException(
+  //       '로그인에 실패하였습니다.',
+  //       HttpStatus.UNAUTHORIZED,
+  //     );
       
-    }
-  }
+  //   }
+  // }
 
   // # 회원가입 후 TRIAL용 JWT 토큰 발행(모든사용자)
   async signUpGenerateJwt(email: string, createdAt: Date): Promise<string> {
@@ -120,6 +121,7 @@ export class AuthService {
         secret: process.env.JWT_SECRETKEY,
         expiresIn: parseInt(process.env.JWT_EXPIRES_IN_TRIAL),
       });
+      console.log("===========> ~ accessToken:", accessToken)
       console.log('JWT 발급 성공');
       return accessToken;
     } catch (err) {
@@ -247,12 +249,20 @@ export class AuthService {
 
   async verify(token: string) {
     try {
-      const verifyToken = await this.jwtService.verify(token);
-      console.log('===========> ~ verifyToken:', verifyToken);
-      console.log('토큰 인증 성공!');
-      return verifyToken;
+      console.log("verify 도달")
+      // const verifyToken = await this.jwtService.verify(token);
+      return await this.jwtService.verify(token);
+
+      // console.log('===========> ~ verifyToken:', verifyToken);
+      // console.log('토큰 인증 성공!');
+      // return verifyToken;
     } catch (err) {
-      throw new AuthException('토큰 인증 실패', HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException('토큰 인증 실패다');
     }
   }
+
+  
+
+
+
 }
