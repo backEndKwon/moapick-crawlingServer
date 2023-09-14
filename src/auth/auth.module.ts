@@ -19,7 +19,7 @@ import { CompanyEntity } from 'src/entity/company.entity';
       useFactory: (configService: ConfigService) => {
         return {
           global: true,
-          secret: configService.get<string>('JWT_SECRET'),
+          secret: configService.get<string>('JWT_SECRETKEY'),
         };
       },
       inject: [ConfigService],

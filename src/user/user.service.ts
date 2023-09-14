@@ -7,11 +7,7 @@ import { UsersEntity } from 'src/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SignupDto, addCompanyInfoDto } from 'src/dtos/user.dto';
-import { ConfigService } from '@nestjs/config';
 import { CompanyEntity } from 'src/entity/company.entity';
-import { AuthService } from 'src/auth/auth.service';
-import { wantedCrawling } from '../crawling/wantedCrawling';
-import { wantedLoginCheck } from 'src/crawling/checkWantedLogin';
 
 @Injectable()
 export class UserService {
