@@ -75,7 +75,11 @@ export class UserService {
       if (!companyInfo) {
         throw new NotFoundException('존재하지 않는 회사정보입니다.');
       }
-      return { userInfo, companyInfo };
+      const user_name = userInfo.name
+      const user_email = userInfo.email
+      const user_userId = userInfo.user_id
+
+      return { user_name, user_email, user_userId, companyInfo };
     } catch (err) {
       console.log('사용자 정보조회 실패', err);
     }
