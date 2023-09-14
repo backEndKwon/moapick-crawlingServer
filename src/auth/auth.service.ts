@@ -71,41 +71,40 @@ export class AuthService {
     }
   }
 
-  // // # [일반] 로그인
-  // async commonLogin(@Res() res: any, loginDto: LoginDto) {
-  //   // validateUser 까지 가능(validate 분리예정)
-  //   try {
-  //     const email = loginDto.email;
-  //     const loginUserPassword = loginDto.password;
-  //     const userInfo = await this.findUser(email);
-  //     const existUserPassword = userInfo.password;
-  //     const isValidPassword = await validatePassword(
-  //       existUserPassword,
-  //       loginUserPassword,
-  //     );
-  //     if (!isValidPassword)
-  //       throw new AuthException(
-  //         '비밀번호가 일치하지 않습니다.',
-  //         HttpStatus.UNAUTHORIZED,
-  //       );
-  //     const user = await this.userRepository.findOne({
-  //       where: { email: email },
-  //     });
-  //     const accessToken = await this.signUpGenerateJwt(email, user.createdAt);
-  //     await this.userRepository.update({ email: email }, { isLogin: true });
-  //     const { password, ...result } = userInfo;
-  //     res.status(200).send({ accessToken, result });
-  //     console.log('로그인에 성공하였습니다');
-  //     console.log('로그인에 성공하였습니다');
-  //   } catch (err) {
-  //     console.log(err);
-  //     throw new AuthException(
-  //       '로그인에 실패하였습니다.',
-  //       HttpStatus.UNAUTHORIZED,
-  //     );
+  // # [일반] 로그인
+  async commonLogin(@Res() res: any, loginDto: LoginDto) {
+    // validateUser 까지 가능(validate 분리예정)
+    try {
+      const email = loginDto.email;
+      const loginUserPassword = loginDto.password;
+      const userInfo = await this.findUser(email);
+      const existUserPassword = userInfo.password;
+      const isValidPassword = await validatePassword(
+        existUserPassword,
+        loginUserPassword,
+      );
+      if (!isValidPassword)
+        throw new AuthException(
+          '비밀번호가 일치하지 않습니다.',
+          HttpStatus.UNAUTHORIZED,
+        );
+      const user = await this.userRepository.findOne({
+        where: { email: email },
+      });
+      const accessToken = await this.signUpGenerateJwt(email, user.createdAt);
+      await this.userRepository.update({ email: email }, { isLogin: true });
+      const { password, ...result } = userInfo;
+      res.status(200).send({ accessToken, result });
+      console.log('로그인에 성공하였습니다');
+    } catch (err) {
+      console.log(err);
+      throw new AuthException(
+        '로그인에 실패하였습니다.',
+        HttpStatus.UNAUTHORIZED,
+      );
       
-  //   }
-  // }
+    }
+  }
 
   // # 회원가입 후 TRIAL용 JWT 토큰 발행(모든사용자)
   async signUpGenerateJwt(email: string, createdAt: Date): Promise<string> {
