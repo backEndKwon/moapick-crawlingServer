@@ -25,7 +25,9 @@ export class UserController {
   //pm2  @UseGuards(JwtServiceAuthGuard)
   async getMypage(@Headers('authorization') authorization: string) {
     const token = authorization.split(' ')[1];
+    console.log("user.controller===========> ~ token:", token)
     const decodedToken = await this.authService.decodeToken(token);
+    console.log("user.controller===========> ~ decodedToken:", decodedToken)
     const result = await this.userService.getMypage(decodedToken);
     console.log('mypage조회성공');
     return result;

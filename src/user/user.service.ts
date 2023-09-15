@@ -65,15 +65,16 @@ export class UserService {
 
   // # 사용자 및 회사정보 조회
   async getMypage(decodedToken: any) {
+    console.log('user.service===========> ~ decodedToken:', decodedToken);
     try {
       const email = decodedToken.email;
-      // console.log('===========> ~ email:', email);
       const userInfo = await this.findByEmail(email);
       if (!userInfo) {
         throw new NotFoundException('존재하지 않는 사용자입니다.');
       }
       const userId = userInfo.user_id;
       const companyInfo = await this.findCompanyInfo(userId);
+
       if (!companyInfo) {
         throw new NotFoundException('존재하지 않는 회사정보입니다.');
       }
@@ -84,7 +85,7 @@ export class UserService {
       const user_userId = userInfo.user_id;
       const company = companyInfo[0];
       const result = { ...company, user_name, user_email, user_userId };
-      return result;
+      return { message: '회사정보 조회 완료', result };
     } catch (err) {
       throw new NotFoundException('내 정보조회에 실패하였습니다.');
     }
@@ -124,17 +125,17 @@ export class UserService {
   async crawlingWanted(id: string, password: string) {
     try {
       const result = await wantedCrawling(id, password);
-      return { message: "크롤링이 완료되었습니다.", result };
+      return { message: '크롤링이 완료되었습니다.', result };
     } catch (error) {
       throw error;
     }
   }
-  
+
   // [크롤링] 원티드 로그인 체크
   async checkWantedLogin(ID: string, PW: string) {
     try {
       const result = await wantedLoginCheck(ID, PW);
-      return { message: "로그인이 확인되었습니다.", result };
+      return { message: '로그인이 확인되었습니다.', result };
     } catch (error) {
       throw error;
     }
