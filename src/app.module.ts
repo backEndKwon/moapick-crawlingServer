@@ -1,16 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// import { UsersRepository } from './auth/user.repository';
-// import { AuthService } from './auth/auth.service';
-// import { AuthController } from './auth/auth.controller';
-import { JwtService } from '@nestjs/jwt';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeORMConfig } from './configs/typeorm.config';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { ConfigService } from '@nestjs/config';
+import { CompanyModule } from './company/company.modules';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,6 +21,7 @@ import { ConfigService } from '@nestjs/config';
     }),
     UserModule,
     AuthModule,
+    CompanyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

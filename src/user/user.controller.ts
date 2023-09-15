@@ -22,7 +22,7 @@ export class UserController {
     summary: '[일반] 내 정보조회',
     description: '[일반] 본인 및 회사 정보 조회, verify까지는 필요 없음',
   })
-  // @UseGuards(JwtServiceAuthGuard)
+  //pm2  @UseGuards(JwtServiceAuthGuard)
   async getMypage(@Headers('authorization') authorization: string) {
     const token = authorization.split(' ')[1];
     const decodedToken = await this.authService.decodeToken(token);

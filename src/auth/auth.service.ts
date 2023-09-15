@@ -1,4 +1,11 @@
-import { Injectable, ForbiddenException, Res, BadRequestException, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  Res,
+  BadRequestException,
+  HttpStatus,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersEntity } from 'src/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,18 +18,16 @@ import { config } from 'dotenv';
 import { AuthException } from './exceptions/authException';
 import * as argon from 'argon2';
 import { CompanyEntity } from 'src/entity/company.entity';
+import { CompanyService } from 'src/company/company.service';
 
 config();
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(UsersEntity)
-    private readonly userRepository: Repository<UsersEntity>,
-    @InjectRepository(CompanyEntity)
-    private readonly companyRepository: Repository<CompanyEntity>,
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly companyService: CompanyService,
   ) {}
 
   // # [일반] 회원가입
@@ -42,25 +47,23 @@ export class AuthService {
       const hashedPassword = await await argon.hash(signupDto.password);
 
       // 회원가입 후 자동 로그인 처리
-
-      const createUserInfo = await this.userRepository.create({
+      const userInfo = {
         email: signupDto.email,
         name: signupDto.name,
         password: hashedPassword,
-        isMarketingAgreement: signupDto.isMarketingAgreement,
+        // isMarketingAgreement: signupDto.isMarketingAgreement,
         isPrivacyPolicyAgreement: signupDto.isPrivacyPolicyAgreement,
         isTermsAgreement: signupDto.isTermsAgreement,
-      });
-      await this.userRepository.save(createUserInfo);
+      };
+      await this.userService.saveSignUpUser(userInfo);
 
-      const user = await this.userRepository.findOne({
-        where: { email: signupDto.email },
-      });
+      const user = await this.userService.findByEmail(signupDto.email);
+
       const accessToken = await this.signUpGenerateJwt(
         signupDto.email,
         user.createdAt,
       );
-      console.log("===========> ~ accessToken:", accessToken)
+      console.log('===========> ~ accessToken:', accessToken);
       return res
         .status(HttpStatus.CREATED)
         .json({ message: '회원가입 성공', accessToken });
@@ -88,11 +91,9 @@ export class AuthService {
           '비밀번호가 일치하지 않습니다.',
           HttpStatus.UNAUTHORIZED,
         );
-      const user = await this.userRepository.findOne({
-        where: { email: email },
-      });
+      const user = await this.userService.findByEmail(email);
       const accessToken = await this.signUpGenerateJwt(email, user.createdAt);
-      await this.userRepository.update({ email: email }, { isLogin: true });
+      await this.userService.updateLoginUser(email); //로그인시 isLogin true로 업데이트
       const { password, ...result } = userInfo;
       res.status(200).send({ accessToken, result });
       console.log('로그인에 성공하였습니다');
@@ -102,7 +103,6 @@ export class AuthService {
         '로그인에 실패하였습니다.',
         HttpStatus.UNAUTHORIZED,
       );
-      
     }
   }
 
@@ -120,7 +120,7 @@ export class AuthService {
         secret: process.env.JWT_SECRETKEY,
         expiresIn: parseInt(process.env.JWT_EXPIRES_IN_TRIAL),
       });
-      console.log("===========> ~ accessToken:", accessToken)
+      console.log('===========> ~ accessToken:', accessToken);
       console.log('JWT 발급 성공');
       return accessToken;
     } catch (err) {
@@ -133,14 +133,11 @@ export class AuthService {
   async paidGenerateJwt(email: string, createdAt: Date): Promise<string> {
     try {
       // # 추후 결제 여부 확인 로직
-      // const isPaid = this.companyRepository.findOne({ where: { user_id } });
+      // const isPaid = this.companyService.findCompanyInfoByUserId(user.user_id);
       // if(!isPaid) throw new AuthException('결제가 완료되지 않았습니다.', HttpStatus.UNAUTHORIZED);
 
-      const user = await this.userRepository.findOne({ where: { email } });
-      const company = await this.companyRepository.findOne({
-        where: { user_id: user.user_id },
-      });
-
+      const user = await this.userService.findByEmail(email);
+      const company = await this.companyService.findCompanyInfoByUserId(user.user_id);
       if ((company.isPaid = true)) {
         const accessTokenPayload: JwtPayload = {
           email,
@@ -168,42 +165,10 @@ export class AuthService {
     }
   }
 
-  // // # [구글]로그인시 JWT 토큰 발행
-  // async GoogleLoginServiceUser(
-  //   email: string,
-  //   createdAt: Date,
-  // ): Promise<string> {
-  //   try {
-  //     return await this.generateJwt(email);
-  //   } catch (err) {
-  //     throw new AuthException('JWT 발급 실패', HttpStatus.UNAUTHORIZED);
-  //   }
-  // }
-
-  // // # [구글] 로그인
-  // async googleLogin(@Res() res: any, email: string, name: string) {
-  //   try {
-  //     const existUser = await this.userRepository.findOne({ where: { email } });
-  //     if (!existUser) throw new ForbiddenException('존재하지 않는 계정입니다.');
-  //     const password = null;
-
-  //     await this.userRepository.save({ email, password, name });
-
-  //     const accessToken = await this.GoogleLoginServiceUser(email);
-  //     existUser.accessToken = accessToken;
-  //     await this.userRepository.save(existUser);
-  //     res.status(200).send({ accessToken });
-  //   } catch (err) {
-  //     throw new AuthException('구글로그인 실패', HttpStatus.UNAUTHORIZED);
-  //   }
-  // }
-
-  // # 로그인시 사용자 정보 반환
+  // 로그인시 사용자 정보 반환
   async findUser(email: string) {
     try {
       const existUser = await this.userService.findByEmail(email);
-      existUser.isLogin = true;
-      await this.userRepository.save(existUser);
       if (!existUser) throw new ForbiddenException('존재하지 않는 계정입니다.');
       const {
         createdAt,
@@ -237,7 +202,7 @@ export class AuthService {
 
       existUser.isLogin = false;
       existUser.accessToken = null;
-      await this.userRepository.save(existUser);
+      await this.userService.saveUser(existUser);
       const accessToken = null;
       console.log('로그아웃 성공');
       return { accessToken, existUser };
@@ -248,7 +213,7 @@ export class AuthService {
 
   async verify(token: string) {
     try {
-      console.log("verify 도달")
+      console.log('verify 도달');
       // const verifyToken = await this.jwtService.verify(token);
       return await this.jwtService.verify(token);
 
@@ -259,9 +224,36 @@ export class AuthService {
       throw new UnauthorizedException('토큰 인증 실패다');
     }
   }
-
-  
-
-
-
 }
+
+// --구글 로그인 추후 오픈-- //
+
+// // # [구글]로그인시 JWT 토큰 발행
+// async GoogleLoginServiceUser(
+//   email: string,
+//   createdAt: Date,
+// ): Promise<string> {
+//   try {
+//     return await this.generateJwt(email);
+//   } catch (err) {
+//     throw new AuthException('JWT 발급 실패', HttpStatus.UNAUTHORIZED);
+//   }
+// }
+
+// // # [구글] 로그인
+// async googleLogin(@Res() res: any, email: string, name: string) {
+//   try {
+//     const existUser = await this.userRepository.findOne({ where: { email } });
+//     if (!existUser) throw new ForbiddenException('존재하지 않는 계정입니다.');
+//     const password = null;
+
+//     await this.userRepository.save({ email, password, name });
+
+//     const accessToken = await this.GoogleLoginServiceUser(email);
+//     existUser.accessToken = accessToken;
+//     await this.userRepository.save(existUser);
+//     res.status(200).send({ accessToken });
+//   } catch (err) {
+//     throw new AuthException('구글로그인 실패', HttpStatus.UNAUTHORIZED);
+//   }
+// }

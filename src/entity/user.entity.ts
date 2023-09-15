@@ -45,7 +45,7 @@ export class UsersEntity extends BaseEntity {
     description: '채용담당자 휴대폰 번호',
   })
   @Column({ nullable: true })
-  phone: number;
+  phone: string;
 
   @ApiProperty({
     example: 'TRUE',

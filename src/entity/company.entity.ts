@@ -38,7 +38,7 @@ export class CompanyEntity extends BaseEntity {
     description: '사업자 등록번호',
   })
   @Column({nullable: true})
-  eid: number;
+  eid: string;
 
   @ApiProperty({
     example: 'Trial',

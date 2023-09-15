@@ -9,6 +9,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import { CompanyEntity } from 'src/entity/company.entity';
+import { CompanyService } from 'src/company/company.service';
 // import { LocalServiceStrategy } from './guards/local-service.guard';
 @Module({
   controllers: [AuthController],
@@ -26,7 +27,7 @@ import { CompanyEntity } from 'src/entity/company.entity';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, UserService], // Add UserService here
+  providers: [AuthService, UserService,CompanyService], // Add UserService here
   exports: [AuthService],
 })
 export class AuthModule {}
