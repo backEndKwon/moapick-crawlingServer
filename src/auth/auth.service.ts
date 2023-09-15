@@ -80,7 +80,7 @@ export class AuthService {
     try {
       const email = loginDto.email;
       const loginUserPassword = loginDto.password;
-      const userInfo = await this.findUser(email);
+      const userInfo = await this.userService.findByEmail(email);
       const existUserPassword = userInfo.password;
       const isValidPassword = await validatePassword(
         existUserPassword,
@@ -91,10 +91,30 @@ export class AuthService {
           '비밀번호가 일치하지 않습니다.',
           HttpStatus.UNAUTHORIZED,
         );
-      const user = await this.userService.findByEmail(email);
-      const accessToken = await this.signUpGenerateJwt(email, user.createdAt);
+      const accessToken = await this.signUpGenerateJwt(
+        email,
+        userInfo.createdAt,
+      );
+      const companyInfo = await this.companyService.findCompanyInfoByUserId(
+        userInfo.user_id,
+        )
+
       await this.userService.updateLoginUser(email); //로그인시 isLogin true로 업데이트
-      const { password, ...result } = userInfo;
+      
+      const result = {
+        email: userInfo.email,
+        name: userInfo.name,
+        user_id: userInfo.user_id,
+        isLogin: userInfo.isLogin,
+        phone: userInfo.phone,
+        createdAt: userInfo.createdAt,
+        company_id: companyInfo.company_id,
+        companyName: companyInfo.companyName,
+        eid: companyInfo.eid,
+        grade: companyInfo.grade,
+        isPaid: companyInfo.isPaid
+      };
+      console.log('===========> ~ result:', result);
       res.status(200).send({ accessToken, result });
       console.log('로그인에 성공하였습니다');
     } catch (err) {
@@ -137,7 +157,9 @@ export class AuthService {
       // if(!isPaid) throw new AuthException('결제가 완료되지 않았습니다.', HttpStatus.UNAUTHORIZED);
 
       const user = await this.userService.findByEmail(email);
-      const company = await this.companyService.findCompanyInfoByUserId(user.user_id);
+      const company = await this.companyService.findCompanyInfoByUserId(
+        user.user_id,
+      );
       if ((company.isPaid = true)) {
         const accessTokenPayload: JwtPayload = {
           email,
@@ -165,24 +187,6 @@ export class AuthService {
     }
   }
 
-  // 로그인시 사용자 정보 반환
-  async findUser(email: string) {
-    try {
-      const existUser = await this.userService.findByEmail(email);
-      if (!existUser) throw new ForbiddenException('존재하지 않는 계정입니다.');
-      const {
-        createdAt,
-        updatedAt,
-        isMarketingAgreement,
-        isPrivacyPolicyAgreement,
-        isTermsAgreement,
-        ...result
-      } = existUser;
-      return result;
-    } catch (err) {
-      throw new AuthException('사용자 정보 조회 실패', HttpStatus.UNAUTHORIZED);
-    }
-  }
   async decodeToken(token: string) {
     try {
       const decoded = this.jwtService.decode(token);
