@@ -125,7 +125,7 @@ export class UserService {
   async crawlingWanted(id: string, password: string) {
     try {
       const result = await wantedCrawling(id, password);
-      return { message: '크롤링이 완료되었습니다.', result };
+      return result;
     } catch (error) {
       throw error;
     }
