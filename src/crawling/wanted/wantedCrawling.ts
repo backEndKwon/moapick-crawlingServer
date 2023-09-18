@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 import { config } from 'dotenv';
-import { uploadFileDownload, uploadFilePreview } from '../lib/aws';
+import { uploadFileDownload, uploadFilePreview } from '../../lib/aws';
 import * as fs from 'fs';
 
 config();

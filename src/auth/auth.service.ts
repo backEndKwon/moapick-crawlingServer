@@ -42,9 +42,12 @@ export class AuthService {
     if (!signupDto.password) {
       throw new BadRequestException('비밀번호를 입력하세요');
     }
+    if (existUser) {
+      throw new BadRequestException('이미 가입된 이메일입니다.');
+    }
 
     try {
-      const hashedPassword = await await argon.hash(signupDto.password);
+      const hashedPassword = await argon.hash(signupDto.password);
 
       // 회원가입 후 자동 로그인 처리
       const userInfo = {
@@ -97,10 +100,10 @@ export class AuthService {
       );
       const companyInfo = await this.companyService.findCompanyInfoByUserId(
         userInfo.user_id,
-        )
+      );
 
       await this.userService.updateLoginUser(email); //로그인시 isLogin true로 업데이트
-      
+
       const result = {
         email: userInfo.email,
         name: userInfo.name,
@@ -111,8 +114,10 @@ export class AuthService {
         company_id: companyInfo.company_id,
         companyName: companyInfo.companyName,
         eid: companyInfo.eid,
-        grade: companyInfo.grade,
-        isPaid: companyInfo.isPaid
+        plan: companyInfo.plan,
+        isPaid: companyInfo.isPaid,
+        paymentStratDate: companyInfo.paymentStartDate,
+        paymentExpirationDate: companyInfo.paymentExpirationDate,
       };
       console.log('===========> ~ result:', result);
       res.status(200).send({ accessToken, result });
@@ -138,9 +143,8 @@ export class AuthService {
       //payload 내용이 많아질수록 네트워크 송수신에 부담이 됨
       const accessToken = this.jwtService.signAsync(accessTokenPayload, {
         secret: process.env.JWT_SECRETKEY,
-        expiresIn: parseInt(process.env.JWT_EXPIRES_IN_TRIAL),
+        expiresIn: process.env.JWT_EXPIRES_IN_TRIAL,
       });
-      console.log('===========> ~ accessToken:', accessToken);
       console.log('JWT 발급 성공');
       return accessToken;
     } catch (err) {
@@ -190,7 +194,7 @@ export class AuthService {
   async decodeToken(token: string) {
     try {
       const decoded = this.jwtService.decode(token);
-      console.log(decoded);
+      console.log('auth.service===========> ~ decoded:', decoded);
       if (!decoded) throw new ForbiddenException('토큰이 존재하지 않습니다.');
       return decoded;
     } catch (err) {
@@ -215,19 +219,25 @@ export class AuthService {
     }
   }
 
-  async verify(token: string) {
-    try {
-      console.log('verify 도달');
-      // const verifyToken = await this.jwtService.verify(token);
-      return await this.jwtService.verify(token);
-
-      // console.log('===========> ~ verifyToken:', verifyToken);
-      // console.log('토큰 인증 성공!');
-      // return verifyToken;
-    } catch (err) {
-      throw new UnauthorizedException('토큰 인증 실패다');
-    }
+  async validateTokenUser(
+    payload: JwtPayload,
+  ): Promise<UsersEntity | undefined> {
+    return await this.userService.findByEmail(payload.email);
   }
+
+  // async verify(token: string) {
+  //   try {
+  //     console.log('verify 도달');
+  //     // const verifyToken = await this.jwtService.verify(token);
+  //     return await this.jwtService.verify(token);
+
+  //     // console.log('===========> ~ verifyToken:', verifyToken);
+  //     // console.log('토큰 인증 성공!');
+  //     // return verifyToken;
+  //   } catch (err) {
+  //     throw new UnauthorizedException('토큰 인증 실패다');
+  //   }
+  // }
 }
 
 // --구글 로그인 추후 오픈-- //

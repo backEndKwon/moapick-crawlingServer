@@ -8,8 +8,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SignupDto, addCompanyInfoDto } from 'src/dtos/user.dto';
 import { CompanyEntity } from 'src/entity/company.entity';
-import { wantedCrawling } from 'src/crawling/wantedCrawling';
-import { wantedLoginCheck } from 'src/crawling/checkWantedLogin';
+import { wantedCrawling } from 'src/crawling/wanted/wantedCrawling';
+import { wantedLoginCheck } from 'src/crawling/wanted/checkWantedLogin';
+import { CheckRocketPunchLogin } from 'src/crawling/rocketPunch/checkRocketPunchLogin';
+import { CrawlingRocketPunch } from 'src/crawling/rocketPunch/rocketPunchCrawling';
 
 @Injectable()
 export class UserService {
@@ -21,7 +23,7 @@ export class UserService {
   ) {}
 
   // # 사용자 추가정보 및 회사정보 생성 및 저장
-  async addCompanyInfo(body: addCompanyInfoDto) {
+  async addCompanyInfo(body: addCompanyInfoDto): Promise<void> {
     try {
       const { email, companyName, eid, phone } = body;
       if (!email) {
@@ -46,12 +48,17 @@ export class UserService {
 
       // ⓑ user Table 의 user_id와 eid, grade를 company Table에 저장하면서 새로운 행 생성
       const existUserId = existUser.user_id;
+      const startDate = existUser.createdAt;
+
       const createCompanyInfo = this.companyRepository.create({
         companyName,
         user_id: existUserId,
         eid: eid,
-        grade: 'trial', //tiral은 2주 무료
+        plan: 'Trial', //tiral은 2주 무료
+        isPaid: false,
+        paymentStartDate: startDate.toISOString(),
       });
+      console.log('===========> ~ createCompanyInfo:', createCompanyInfo);
 
       await this.companyRepository.save(createCompanyInfo);
       console.log('추가정보 저장 완료');
@@ -139,5 +146,18 @@ export class UserService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async crawlingRocketPunch(id: string, password: string) {
+    try {
+      const result = await CrawlingRocketPunch(id, password);
+      console.log("=====>크롤링 완료")
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async checkRocketPunchLogin(ID: string, PW: string) {
+    await CheckRocketPunchLogin(ID, PW);
   }
 }

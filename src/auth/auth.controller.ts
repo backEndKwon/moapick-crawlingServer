@@ -16,7 +16,7 @@ import {
 } from 'src/dtos/user.dto';
 import { UserService } from '../user/user.service';
 import { AuthService } from 'src/auth/auth.service';
-import { JwtServiceAuthGuard } from 'src/auth/guards/jwt-service.guard';
+// import { JwtServiceAuthGuard } from 'src/auth/guards/auth.guard';
 import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('auth')
@@ -76,7 +76,7 @@ export class AuthController {
 
   // (4) [Common] Logout
   @Post('/logout')
-  @UseGuards(JwtServiceAuthGuard)
+  // @UseGuards(JwtServiceAuthGuard)
   @ApiOperation({
     summary: '[일반] 로그아웃 API',
     description: '[일반] 사용자 로그아웃',

@@ -10,12 +10,13 @@ import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
 import { CompanyEntity } from 'src/entity/company.entity';
 import { CompanyService } from 'src/company/company.service';
+import { JwtStrategy } from './strategy/jwt-service.strategy';
 // import { LocalServiceStrategy } from './guards/local-service.guard';
 @Module({
   controllers: [AuthController],
   imports: [
     TypeOrmModule.forFeature([UsersEntity, CompanyEntity]),
-    PassportModule.register({ session: false }), //세션대신 토큰기반 인증을 사용하기 위한 모듈
+    PassportModule.register({ defaultStrategy: 'jwt' }), //세션대신 토큰기반 인증을 사용하기 위한 모듈
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => {
         return {
@@ -27,7 +28,7 @@ import { CompanyService } from 'src/company/company.service';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, UserService,CompanyService], // Add UserService here
+  providers: [AuthService, UserService, CompanyService, JwtModule, JwtStrategy], // Add UserService here
   exports: [AuthService],
 })
 export class AuthModule {}

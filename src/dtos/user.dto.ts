@@ -38,6 +38,10 @@ export class addCompanyInfoDto {
 
   @ApiProperty({ description: 'DTO email/user_id찾기위해' })
   email: string;
+  
+  @ApiProperty({ description: '계정 생성하자마자 2주 trial기간 시작' })
+  paymentStartDate: string;
+  
 }
 
 // [일반] 로그인 dto
