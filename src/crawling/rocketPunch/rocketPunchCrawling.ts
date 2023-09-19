@@ -186,12 +186,12 @@ async function saveApplicantResumesAndReturnResult(page, userCardIds) {
     ]);
     userInfo['name'] = name;
     userInfo['email'] = email;
-    userInfo['phone'] = phone;
-    userInfo['downloadUrl'] = downloadUrl;
-    userInfo['previewUrl'] = previewUrl;
+    userInfo['mobile'] = phone;
+    userInfo['filePath'] = downloadUrl;
+    userInfo['previewPath'] = previewUrl;
     userInfo['position'] = position;
-    userInfo['applyDate'] = applyDate.split(' ')[0];
-    userInfo['fileName'] = `로켓펀치_${name}_${email}`;
+    userInfo['chk_time'] = applyDate.split(' ')[0];
+    userInfo['file_name'] = `로켓펀치_${name}_${email}`;
     allUserInfo.push(userInfo);
 
     downloadUrls.push(downloadUrl);
