@@ -1,10 +1,10 @@
-import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/entity/user.entity';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
+import { Module } from "@nestjs/common";
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { UsersEntity } from "src/entity/user.entity";
+import { PassportModule } from "@nestjs/passport";
+import { JwtModule } from "@nestjs/jwt";
 // import { JwtServiceStrategy } from './strategy/jwt-service.strategy';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from 'src/user/user.service';
@@ -21,8 +21,8 @@ import { JwtStrategy } from './strategy/jwt-service.strategy';
       useFactory: (configService: ConfigService) => {
         return {
           global: true,
-          secret: configService.get<string>('JWT_SECRETKEY'),
-          expiresIn: configService.get<string>('JWT_EXPIRATION_IN_TRIAL'),
+          secret: configService.get<string>("JWT_SECRETKEY"),
+          expiresIn: configService.get<string>("JWT_EXPIRATION_IN_TRIAL"),
         };
       },
       inject: [ConfigService],

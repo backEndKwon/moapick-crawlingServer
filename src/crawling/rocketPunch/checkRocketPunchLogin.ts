@@ -6,7 +6,7 @@ const buttonSelector = {
   submitButton: 'button[type="submit"]',
 };
 
-export async function CheckRocketPunchLogin(email: string, password: string) {
+export async function RocketPunchLoginCheck(email: string, password: string) {
   const browser = await chromium.launch({
     headless: false,
   });

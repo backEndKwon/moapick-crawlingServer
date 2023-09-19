@@ -1,7 +1,10 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus } from "@nestjs/common";
 
 export class AuthException extends Error {
-  constructor(message: string, public httpStatus: HttpStatus) {
+  constructor(
+    message: string,
+    public httpStatus: HttpStatus,
+  ) {
     super(message);
     this.message = message;
     this.httpStatus = httpStatus;

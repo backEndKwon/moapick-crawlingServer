@@ -1,6 +1,6 @@
-import * as AWS from 'aws-sdk';
-import * as fs from 'fs';
-import { config } from 'dotenv';
+import * as AWS from "aws-sdk";
+import * as fs from "fs";
+import { config } from "dotenv";
 
 config();
 
@@ -9,8 +9,8 @@ const s3 = new AWS.S3({
     accessKeyId: process.env.S3_ACCESS_KEY,
     secretAccessKey: process.env.S3_SECRET_KEY,
   },
-  region: 'ap-northeast-2',
-  signatureVersion: 'v4',
+  region: "ap-northeast-2",
+  signatureVersion: "v4",
 });
 
 export const uploadFileDownload = (fileName: string): Promise<string> => {
@@ -18,11 +18,11 @@ export const uploadFileDownload = (fileName: string): Promise<string> => {
     const fileContent = fs.readFileSync(`${fileName}`);
     // 파일 설정
     const params = {
-      Bucket: 'moapick',
+      Bucket: "moapick",
       Key: `download_${fileName}`,
       Body: fileContent,
-      ContentType: 'application/pdf',
-      ContentDisposition: 'attachment',
+      ContentType: "application/pdf",
+      ContentDisposition: "attachment",
     };
     // 파일 업로드
     s3.upload(
@@ -46,11 +46,11 @@ export const uploadFilePreview = (fileName: string): Promise<string> => {
 
     // 파일 설정
     const params = {
-      Bucket: 'moapick',
+      Bucket: "moapick",
       Key: `preview_${fileName}`,
       Body: fileContent,
-      ContentType: 'application/pdf',
-      ContentDisposition: 'inline',
+      ContentType: "application/pdf",
+      ContentDisposition: "inline",
     };
 
     // 파일 업로드

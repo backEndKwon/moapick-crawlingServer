@@ -7,7 +7,7 @@ import {
   Res,
   UseGuards,
   Headers,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   GoogleLoginDto,
   LoginDto,
@@ -19,7 +19,7 @@ import { AuthService } from 'src/auth/auth.service';
 // import { JwtServiceAuthGuard } from 'src/auth/guards/auth.guard';
 import { ApiOperation } from '@nestjs/swagger';
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
   constructor(
     private readonly userService: UserService,
@@ -27,20 +27,20 @@ export class AuthController {
   ) {}
 
   // ① [Common] Signup
-  @Post('/signup')
+  @Post("/signup")
   @ApiOperation({
-    summary: '[일반] 회원가입 API',
-    description: '[일반] 사용자 초기 계정 생성',
+    summary: "[일반] 회원가입 API",
+    description: "[일반] 사용자 초기 계정 생성",
   })
   async signUp(@Res() res: Response, @Body() signupDto: SignupDto) {
     return await this.authService.signUp(res, signupDto);
   }
 
   // ② [Common] Login
-  @Post('/login')
+  @Post("/login")
   @ApiOperation({
-    summary: '[일반] 로그인 API',
-    description: '[일반] 사용자 로그인',
+    summary: "[일반] 로그인 API",
+    description: "[일반] 사용자 로그인",
   })
   // @UseGuards(LocalServiceAuthGuard)
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
@@ -48,10 +48,10 @@ export class AuthController {
   }
 
   // ④ [addInfo] addCompanyInfo
-  @Post('/signup/addCompanyInfo')
+  @Post("/signup/addCompanyInfo")
   @ApiOperation({
-    summary: '[추가정보] 추가정보받기 API',
-    description: '[추가정보] 추가정보받기 API',
+    summary: "[추가정보] 추가정보받기 API",
+    description: "[추가정보] 추가정보받기 API",
   })
   async addCompanyInfo(@Body() body: addCompanyInfoDto): Promise<void> {
     await this.userService.addCompanyInfo(body);
@@ -78,8 +78,8 @@ export class AuthController {
   @Post('/logout')
   // @UseGuards(JwtServiceAuthGuard)
   @ApiOperation({
-    summary: '[일반] 로그아웃 API',
-    description: '[일반] 사용자 로그아웃',
+    summary: "[일반] 로그아웃 API",
+    description: "[일반] 사용자 로그아웃",
   })
   async logout(@Headers() header) {
     return await this.authService.logout(header);

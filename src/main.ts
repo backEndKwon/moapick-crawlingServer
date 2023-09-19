@@ -1,13 +1,13 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { setupSwagger } from './utils/swagger';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { setupSwagger } from "./utils/swagger";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = 5000;
   // const post = 5000 //공용(추후 환경변수로 대체)
   app.enableCors({
-    origin: '*',
+    origin: "*",
     credentials: true,
   });
   setupSwagger(app);
