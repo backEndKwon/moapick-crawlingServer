@@ -20,10 +20,9 @@ export class CompanyEntity extends BaseEntity {
   company_id: number;
 
   @ApiProperty({
-    example: '스파르파스타',
-    description: '회사명',
+    example: "스파르파스타",
+    description: "회사명",
   })
-  @Column({ nullable: true })
   @Column({ nullable: true })
   companyName: string;
 
@@ -39,15 +38,35 @@ export class CompanyEntity extends BaseEntity {
     description: "사업자 등록번호",
   })
   @Column({ nullable: true })
-  @Column({ nullable: true })
   eid: string;
 
   @ApiProperty({
     example: "Trial",
     description: "사용자 등급/추후 등급별 권한 부여",
   })
-  @Column({ default: 'Trial' })
+  @Column({ default: "Trial" })
   plan: string;
+
+  @ApiProperty({
+    example: " 2023-09-16T11:28:03.889Z",
+    description: "결제후 사용 시작되는 날짜",
+  })
+  @Column({ nullable: true })
+  paymentStartDate: string;
+
+  @ApiProperty({
+    example: " 2023-09-30T11:28:03.889Z",
+    description: "결제후 만료되는 날짜(첫 Trial기간에는 +14일)",
+  })
+  @Column({ nullable: true })
+  paymentExpirationDate: string;
+
+  @ApiProperty({
+    example: "생략",
+    description: "생성날짜 및 시간",
+  })
+  @Column({ default: false })
+  isPaid: boolean;
 
   @ApiProperty({
     example: "생략",
@@ -55,27 +74,6 @@ export class CompanyEntity extends BaseEntity {
   })
   @CreateDateColumn()
   createdAt: Date;
-
-  @ApiProperty({
-    example: ' 2023-09-16T11:28:03.889Z',
-    description: '결제후 사용 시작되는 날짜',
-  })
-  @CreateDateColumn({ nullable: true })
-  paymentStartDate: string;
-
-  @ApiProperty({
-    example: ' 2023-09-30T11:28:03.889Z',
-    description: '결제후 만료되는 날짜',
-  })
-  @CreateDateColumn({ nullable: true })
-  paymentExpirationDate: string;
-
-  @ApiProperty({
-    example: '생략',
-    description: '생성날짜 및 시간',
-  })
-  @CreateDateColumn({ default: false })
-  isPaid: boolean;
 
   @ApiProperty({
     example: "생략",

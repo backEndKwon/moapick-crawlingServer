@@ -49,6 +49,11 @@ export class UserService {
       // ⓑ user Table 의 user_id와 eid, grade를 company Table에 저장하면서 새로운 행 생성
       const existUserId = existUser.user_id;
       const startDate = existUser.createdAt;
+      const startDatea = new Date(startDate); // 예시로 주어진 시작 날짜
+      console.log("===========> ~ startDatea:", startDatea)
+
+      const expirationDateTimestamp = startDatea.getTime() + (14 * 24 * 60 * 60 * 1000); // 현재 시간에서 14일 후의 타임스탬프
+      const expirationDate = new Date(expirationDateTimestamp).toISOString();
 
       const createCompanyInfo = this.companyRepository.create({
         companyName,
@@ -57,6 +62,7 @@ export class UserService {
         plan: 'Trial', //tiral은 2주 무료
         isPaid: false,
         paymentStartDate: startDate.toISOString(),
+        paymentExpirationDate: expirationDate
       });
       console.log('===========> ~ createCompanyInfo:', createCompanyInfo);
 
