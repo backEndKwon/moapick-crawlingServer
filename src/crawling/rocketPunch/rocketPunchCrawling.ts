@@ -167,6 +167,11 @@ async function saveApplicantResumesAndReturnResult(page, userCardIds) {
       element.textContent.trim(),
     );
 
+    // 지원일 추출
+    const applyDateSelector = '.content .item:nth-child(1) .content'; // 지원일 요소 선택
+    const applyDate = await page.$eval(applyDateSelector, (element) =>
+      element.textContent.trim(),
+    );
     fileNames.push(email);
 
     // PDF 파일 이름 및 경로 설정
@@ -185,6 +190,7 @@ async function saveApplicantResumesAndReturnResult(page, userCardIds) {
     userInfo['downloadUrl'] = downloadUrl;
     userInfo['previewUrl'] = previewUrl;
     userInfo['position'] = position;
+    userInfo['applyDate'] = applyDate.split(' ')[0];
     userInfo['fileName'] = `로켓펀치_${name}_${email}`;
     allUserInfo.push(userInfo);
 
