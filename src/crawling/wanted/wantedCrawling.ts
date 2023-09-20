@@ -83,10 +83,13 @@ async function getUserCardsId(page, postId) {
     },
     [postId],
   );
+  console.log("===========> ~ applyUserInfo:", applyUserInfo)
+
   const userCardsId = applyUserInfo
     .filter((user) => user.cancel_time === null)
     .filter((user) => user.matchup_column_index === null)
     .map((user) => user.id);
+  console.log("===========> ~ userCardsId:", userCardsId)
   return userCardsId;
 }
 async function downloadResumes(page, resumes) {
