@@ -1,4 +1,4 @@
-import { chromium } from 'playwright';
+import { chromium } from "playwright";
 
 const buttonSelector = {
   emailInput: "input[name='email']",
@@ -8,15 +8,19 @@ const buttonSelector = {
 
 export async function RocketPunchLoginCheck(email: string, password: string) {
   const browser = await chromium.launch({
-    headless: false,
+    headless: true,
   });
 
-  const context = await browser.newContext();
+  const userAgent =
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";
+  const context = await browser.newContext({ userAgent });
+  context.setDefaultNavigationTimeout(0);
+  context.setDefaultTimeout(0);
 
   const page = await context.newPage();
 
   try {
-    await page.goto('https://www.rocketpunch.com/login');
+    await page.goto("https://www.rocketpunch.com/login");
 
     // 이메일 입력
     await (await page.waitForSelector(buttonSelector.emailInput)).type(email);
@@ -34,22 +38,22 @@ export async function RocketPunchLoginCheck(email: string, password: string) {
 
     await page.waitForTimeout(1000);
     const loginErrorMessage = await page
-      .locator('#global-messages p')
+      .locator("#global-messages p")
       .textContent();
 
-    if (loginErrorMessage === '로그인 정보를 확인해 주세요.') {
+    if (loginErrorMessage === "로그인 정보를 확인해 주세요.") {
       await browser.close();
-      console.log('로그인 실패');
+      console.log("로그인 실패");
       return false;
     }
-    console.log('로그인 성공');
+    console.log("로그인 성공");
 
     await browser.close();
     return true;
   } catch (error) {
     console.log(error);
     await browser.close();
-    console.log('try-catch, 로그인 실패');
+    console.log("try-catch, 로그인 실패");
     return false;
   }
 }
