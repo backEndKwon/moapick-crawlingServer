@@ -187,11 +187,11 @@ async function saveApplicantResumesAndReturnResult(page, userCardIds) {
     userInfo['name'] = name;
     userInfo['email'] = email;
     userInfo['mobile'] = phone;
-    userInfo['filePath'] = downloadUrl;
-    userInfo['previewPath'] = previewUrl;
+    userInfo['filePath'] = [downloadUrl];
+    userInfo['previewPath'] = [previewUrl];
     userInfo['position'] = position;
     userInfo['chk_time'] = applyDate.split(' ')[0];
-    userInfo['file_name'] = `로켓펀치_${name}_${email}`;
+    userInfo['file_name'] = [`로켓펀치_${name}_${email}`];
     allUserInfo.push(userInfo);
 
     downloadUrls.push(downloadUrl);
