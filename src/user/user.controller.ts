@@ -5,19 +5,21 @@ import {
   Post,
   UseGuards,
   Headers,
-} from '@nestjs/common';
-import { UserService } from './user.service';
-import { AuthService } from 'src/auth/auth.service';
+} from "@nestjs/common";
+import { UserService } from "./user.service";
+import { AuthService } from "src/auth/auth.service";
 // import { JwtServiceAuthGuard } from 'src/auth/guards/auth.guard';
-import { ApiOperation } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-@Controller('user')
+import { ApiOperation } from "@nestjs/swagger";
+import { AuthGuard } from "@nestjs/passport";
+@Controller("user")
 export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
   ) {}
 
+  /* 크롤링 */
+  // (1) 원티드
   @Post("/checkWantedLogin")
   @ApiOperation({
     summary: "[크롤링-원티드]로그인 체크용",
@@ -36,36 +38,93 @@ export class UserController {
     return await this.userService.crawlingWanted(body.id, body.password);
   }
 
-  @Post('/checkRocketPuchLogin')
+  // (2) 로켓펀치
+  @Post("/checkRocketPuchLogin")
   @ApiOperation({
-    summary: '[크롤링-로켓펀치]로그인 체크용',
-    description: '로켓펀치 id, password를 받아서 회원정보 맞는지 체크',
+    summary: "[크롤링-로켓펀치]로그인 체크용",
+    description: "로켓펀치 id, password를 받아서 회원정보 맞는지 체크",
   })
   async checkRocketPunchLogin(@Body() body) {
-    return await this.userService.checkRocketPunchLogin(body.email, body.password);
+    return await this.userService.checkRocketPunchLogin(
+      body.email,
+      body.password,
+    );
   }
 
-  @Post('/rocketPunchCrawling')
+  @Post("/rocketPunchCrawling")
   @ApiOperation({
-    summary: '[크롤링-로켓펀치]지원자 정보 크롤링',
-    description: '지원자 정보 크롤링',
+    summary: "[크롤링-로켓펀치]지원자 정보 크롤링",
+    description: "지원자 정보 크롤링",
   })
   async rocketPunchCrawling(@Body() body) {
-    return await this.userService.crawlingRocketPunch(body.email, body.password);
+    return await this.userService.crawlingRocketPunch(
+      body.email,
+      body.password,
+    );
   }
 
+  // // (3) 프로그래머스
+  // @Post("/checkProgrammersLogin")
+  // @ApiOperation({
+  //   summary: "[크롤링-프로그래머스]로그인 체크용",
+  //   description: "프로그래머스 id, password를 받아서 회원정보 맞는지 체크",
+  // })
+  // async checkProgrammersLogin(@Body() body) {
+  //   return await this.userService.checkProgrammersLogin(
+  //     body.email,
+  //     body.password,
+  //   );
+  // }
+
+  // @Post("/programmersCrawling")
+  // @ApiOperation({
+  //   summary: "[크롤링-로켓펀치]지원자 정보 크롤링",
+  //   description: "지원자 정보 크롤링",
+  // })
+  // async programmersCrawling(@Body() body) {
+  //   return await this.userService.crawlingProgrammers(
+  //     body.email,
+  //     body.password,
+  //   );
+  // }
+
+  // // (4) 잡플래닛
+  // @Post("/checkJobplanetLogin")
+  // @ApiOperation({
+  //   summary: "[크롤링-프로그래머스]로그인 체크용",
+  //   description: "프로그래머스 id, password를 받아서 회원정보 맞는지 체크",
+  // })
+  // async checkJobplanetLogin(@Body() body) {
+  //   return await this.userService.checkJobplanetLogin(
+  //     body.email,
+  //     body.password,
+  //   );
+  // }
+
+  // @Post("/jobplanetCrawling")
+  // @ApiOperation({
+  //   summary: "[크롤링-로켓펀치]지원자 정보 크롤링",
+  //   description: "지원자 정보 크롤링",
+  // })
+  // async jobplanetCrawling(@Body() body) {
+  //   return await this.userService.crawlingJobplanet(
+  //     body.email,
+  //     body.password,
+  //   );
+  // }
+
   // jwt verify test
-  @Get('/mypage')
+  @Get("/mypage")
   @ApiOperation({
-    summary: '[일반] 내 정보조회',
-    description: '[일반] 본인 및 회사 정보 조회, verify까지는 필요 없음',
+    summary: "[일반] 내 정보조회",
+    description: "[일반] 본인 및 회사 정보 조회, verify까지는 필요 없음",
   })
   @UseGuards(AuthGuard())
-  async getMypage(@Headers('Authorization') Authorization: string) {
-    const token = Authorization.split(' ')[1];
+  async getMypage(@Headers("Authorization") Authorization: string) {
+    const token = Authorization.split(" ")[1];
     const decodedToken = await this.authService.decodeToken(token);
     const result = await this.userService.getMypage(decodedToken);
-    console.log("===========> ~ result.result:", result.result)
+    console.log("===========> ~ result.result:", result.result);
     return result.result;
   }
 }

@@ -2,16 +2,16 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
-} from '@nestjs/common';
-import { UsersEntity } from 'src/entity/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { SignupDto, addCompanyInfoDto } from 'src/dtos/user.dto';
-import { CompanyEntity } from 'src/entity/company.entity';
-import { wantedCrawling } from 'src/crawling/wanted/wantedCrawling';
-import { wantedLoginCheck } from 'src/crawling/wanted/checkWantedLogin';
-import { RocketPunchLoginCheck } from 'src/crawling/rocketPunch/checkRocketPunchLogin';
-import { CrawlingRocketPunch } from 'src/crawling/rocketPunch/rocketPunchCrawling';
+} from "@nestjs/common";
+import { UsersEntity } from "src/entity/user.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { SignupDto, addCompanyInfoDto } from "src/dtos/user.dto";
+import { CompanyEntity } from "src/entity/company.entity";
+import { wantedCrawling } from "src/crawling/wanted/wantedCrawling";
+import { wantedLoginCheck } from "src/crawling/wanted/checkWantedLogin";
+import { RocketPunchLoginCheck } from "src/crawling/rocketPunch/checkRocketPunchLogin";
+import { CrawlingRocketPunch } from "src/crawling/rocketPunch/rocketPunchCrawling";
 
 @Injectable()
 export class UserService {
@@ -50,21 +50,22 @@ export class UserService {
       const existUserId = existUser.user_id;
       const startDate = existUser.createdAt;
       const startDatea = new Date(startDate); // 예시로 주어진 시작 날짜
-      console.log("===========> ~ startDatea:", startDatea)
+      console.log("===========> ~ startDatea:", startDatea);
 
-      const expirationDateTimestamp = startDatea.getTime() + (14 * 24 * 60 * 60 * 1000); // 현재 시간에서 14일 후의 타임스탬프
+      const expirationDateTimestamp =
+        startDatea.getTime() + 14 * 24 * 60 * 60 * 1000; // 현재 시간에서 14일 후의 타임스탬프
       const expirationDate = new Date(expirationDateTimestamp).toISOString();
 
       const createCompanyInfo = this.companyRepository.create({
         companyName,
         user_id: existUserId,
         eid: eid,
-        plan: 'Trial', //tiral은 2주 무료
+        plan: "Trial", //tiral은 2주 무료
         isPaid: false,
         paymentStartDate: startDate.toISOString(),
-        paymentExpirationDate: expirationDate
+        paymentExpirationDate: expirationDate,
       });
-      console.log('===========> ~ createCompanyInfo:', createCompanyInfo);
+      console.log("===========> ~ createCompanyInfo:", createCompanyInfo);
 
       await this.companyRepository.save(createCompanyInfo);
       console.log("추가정보 저장 완료");
@@ -132,38 +133,98 @@ export class UserService {
     return existUser;
   }
 
-  // --크롤링-- //
-  // 설명:크롤링 관련 controller만들기 애매하고 크롤링도 user의 행동 user에 넣어놓음
-  //[크롤링] 원티드 지원자
-  async crawlingWanted(id: string, password: string) {
-    try {
-      const result = await wantedCrawling(id, password);
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  // [크롤링] 원티드 로그인 체크
+  /* 크롤링 */
+  // info:크롤링 관련 controller만들기 애매하고 크롤링도 user의 행동 user에 넣어놓음
+  // (1)-1 원티드 로그인
   async checkWantedLogin(ID: string, PW: string) {
     try {
       const result = await wantedLoginCheck(ID, PW);
-      return { message: "로그인이 확인되었습니다.", result };
+      return { message: "원티드 로그인이 확인되었습니다.", result };
     } catch (error) {
+      console.log("=====>원티드 로그인 실패");
+      throw error;
+    }
+  }
+  // (1)-2 원티드
+  async crawlingWanted(id: string, password: string) {
+    try {
+      const result = await wantedCrawling(id, password);
+      console.log("=====>원티드 크롤링 완료");
+      return result;
+    } catch (error) {
+      console.log("=====>원티드 크롤링 실패");
       throw error;
     }
   }
 
-  async crawlingRocketPunch(id: string, password: string) {
+  // (2)-1 로켓펀치 로그인
+  async checkRocketPunchLogin(ID: string, PW: string) {
     try {
-      const result = await CrawlingRocketPunch(id, password);
-      console.log("=====>크롤링 완료")
-      return result;
+      const result = await RocketPunchLoginCheck(ID, PW);
+      return { message: " 로켓펀치 로그인이 확인되었습니다.", result };
     } catch (error) {
+      console.log("=====>로켓펀치 로그인 실패");
       throw error;
     }
   }
-  async checkRocketPunchLogin(ID: string, PW: string) {
-    await RocketPunchLoginCheck(ID, PW);
+
+  // (2)-2 로켓펀치
+  async crawlingRocketPunch(id: string, password: string) {
+    try {
+      const result = await CrawlingRocketPunch(id, password);
+      console.log("=====>로켓펀치 크롤링 완료");
+      return result;
+    } catch (error) {
+      console.log("=====>로켓펀치 크롤링 실패");
+      throw error;
+    }
   }
+
+  // // (3)-1 프로그래머스 로그인
+  // async checkProgrammersLogin(ID: string, PW: string) {
+  //   try {
+  //     const result = await RocketPunchLoginCheck(ID, PW);
+  //     console.log("=====>프로그래머스 로그인 완료");
+  //     return { message: " 프로그래머스 로그인이 확인되었습니다.", result };
+  //   } catch (error) {
+  //     console.log("=====>프로그래머스 로그인 실패");
+  //     throw error;
+  //   }
+  // }
+
+  // // (3)-2 프로그래머스
+  // async crawlingProgrammers(id: string, password: string) {
+  //   try {
+  //     const result = await CrawlingProgrammers(id, password);
+  //     console.log("=====>프로그래머스 크롤링 완료");
+  //     return { message: " 프로그래머스 크롤링이 확인되었습니다.", result };
+  //   } catch (error) {
+  //     console.log("=====>프로그래머스 크롤링 실패");
+  //     throw error;
+  //   }
+  // }
+
+  // // (4)-1 잡플래닛 로그인
+  // async checkJobplanetLogin(ID: string, PW: string) {
+  //   try {
+  //     const result = await RocketPunchLoginCheck(ID, PW);
+  //     console.log("=====> 잡플래닛 로그인 완료");
+  //     return { message: " 잡플래닛 로그인이 확인되었습니다.", result };
+  //   } catch (error) {
+  //     console.log("=====> 잡플래닛 로그인 실패");
+  //     throw error;
+  //   }
+  // }
+
+  // // (4)-2 잡플래닛
+  // async crawlingJobplanet(id: string, password: string) {
+  //   try {
+  //     const result = await CrawlingJobplanet(id, password);
+  //     console.log("=====> 잡플래닛 크롤링 완료");
+  //     return { message: " 잡플래닛 크롤링이 확인되었습니다.", result };
+  //   } catch (error) {
+  //     console.log("=====> 잡플래닛 크롤링 실패");
+  //     throw error;
+  //   }
+  // }
 }
