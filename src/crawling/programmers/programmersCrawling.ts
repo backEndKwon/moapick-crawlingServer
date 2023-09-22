@@ -123,6 +123,7 @@ async function saveApplicantResumesAndReturnResult(
   for (let href of hrefs) {
     let downloadUrls = [];
     let previewUrls = [];
+    let fileNames = [];
     await page.goto(href);
     let userInfo = {};
 
@@ -148,17 +149,8 @@ async function saveApplicantResumesAndReturnResult(
       page,
       "#job-application-display > div > div.resume__summary > section.position-control > ul > li:nth-child(2) > span.badge",
     );
-    console.log(
-      "🚀 ~ file: programmersCrawling.ts:150 ~ applyDate:",
-      applyDate,
-    );
-
     const parsedDate = dayjs(applyDate, "YY년 MM월 DD일 HH:mm", "ko");
     const formatedDate = parsedDate.format("YYYY-MM-DDTHH:mm:ss");
-    console.log(
-      "🚀 ~ file: programmersCrawling.ts:158 ~ formatedDate:",
-      formatedDate,
-    );
     //첨부파일
     //TODO: 첨부파일이 없는 경우 예외처리
     const hasPortpolio = await page
@@ -166,19 +158,18 @@ async function saveApplicantResumesAndReturnResult(
       .isVisible();
 
     const resumeName = `${name}_이력서.pdf`;
+    fileNames.push(resumeName);
 
     if (hasPortpolio) {
-      const portpolio = await page.$eval("a._1NtFB7aKK7N1b4YJxa4kEW", (el) =>
+      const portpolio = await page.$eval("a._j1NtFB7aKK7N1b4YJxa4kEW", (el) =>
         el.getAttribute("href"),
       );
-      const outputPath = path.join(
-        homeDirectory,
-        `./${name}_${position}_이력서.pdf`,
-      );
+      const portpolioName = `./${name}_${position}_이력서.pdf`;
+      const outputPath = path.join(homeDirectory, portpolioName);
       await downloadPdf(portpolio, outputPath);
+      fileNames.push(portpolioName);
 
       //이력서 이름
-
       const pdfPath = path.join(homeDirectory, resumeName);
 
       await page.pdf({ path: pdfPath, format: "A4" });
