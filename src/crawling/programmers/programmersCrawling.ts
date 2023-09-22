@@ -164,7 +164,7 @@ async function saveApplicantResumesAndReturnResult(
       const portpolio = await page.$eval("a._1NtFB7aKK7N1b4YJxa4kEW", (el) =>
         el.getAttribute("href"),
       );
-      const portpolioName = `./${name}_${position}_이력서.pdf`;
+      const portpolioName = `${name}_${position}_이력서.pdf`;
       const outputPath = path.join(homeDirectory, portpolioName);
       await downloadPdf(portpolio, outputPath);
       fileNames.push(portpolioName);
@@ -217,7 +217,7 @@ async function saveApplicantResumesAndReturnResult(
     userInfo["previewPath"] = previewUrls;
     userInfo["position"] = position;
     userInfo["chk_time"] = formatedDate;
-    userInfo["file_name"] = resumeName;
+    userInfo["file_name"] = fileNames;
 
     allUserInfo.push(userInfo);
   }
