@@ -161,7 +161,7 @@ async function saveApplicantResumesAndReturnResult(
     fileNames.push(resumeName);
 
     if (hasPortpolio) {
-      const portpolio = await page.$eval("a._j1NtFB7aKK7N1b4YJxa4kEW", (el) =>
+      const portpolio = await page.$eval("a._1NtFB7aKK7N1b4YJxa4kEW", (el) =>
         el.getAttribute("href"),
       );
       const portpolioName = `./${name}_${position}_이력서.pdf`;
