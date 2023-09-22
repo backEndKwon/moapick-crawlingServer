@@ -40,10 +40,10 @@ export class AuthService {
       throw new BadRequestException("이메일을 입력하세요");
     }
     if (!signupDto.password) {
-      throw new BadRequestException('비밀번호를 입력하세요');
+      throw new BadRequestException("비밀번호를 입력하세요");
     }
     if (existUser) {
-      throw new BadRequestException('이미 가입된 이메일입니다.');
+      throw new BadRequestException("이미 가입된 이메일입니다.");
     }
 
     try {
@@ -104,7 +104,6 @@ export class AuthService {
 
       await this.userService.updateLoginUser(email); //로그인시 isLogin true로 업데이트
 
-
       const result = {
         email: userInfo.email,
         name: userInfo.name,
@@ -146,7 +145,7 @@ export class AuthService {
         secret: process.env.JWT_SECRETKEY,
         expiresIn: process.env.JWT_EXPIRES_IN_TRIAL,
       });
-      console.log('JWT 발급 성공');
+      console.log("JWT 발급 성공");
       return accessToken;
     } catch (err) {
       throw new AuthException("JWT 발급 실패", HttpStatus.UNAUTHORIZED);
@@ -195,8 +194,8 @@ export class AuthService {
   async decodeToken(token: string) {
     try {
       const decoded = this.jwtService.decode(token);
-      console.log('auth.service===========> ~ decoded:', decoded);
-      if (!decoded) throw new ForbiddenException('토큰이 존재하지 않습니다.');
+      console.log("auth.service===========> ~ decoded:", decoded);
+      if (!decoded) throw new ForbiddenException("토큰이 존재하지 않습니다.");
       return decoded;
     } catch (err) {
       throw new AuthException("JWT 디코딩 실패", HttpStatus.UNAUTHORIZED);
