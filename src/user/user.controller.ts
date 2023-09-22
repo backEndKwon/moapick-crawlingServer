@@ -63,30 +63,30 @@ export class UserController {
     );
   }
 
-  // // (3) 프로그래머스
-  // @Post("/checkProgrammersLogin")
-  // @ApiOperation({
-  //   summary: "[크롤링-프로그래머스]로그인 체크용",
-  //   description: "프로그래머스 id, password를 받아서 회원정보 맞는지 체크",
-  // })
-  // async checkProgrammersLogin(@Body() body) {
-  //   return await this.userService.checkProgrammersLogin(
-  //     body.email,
-  //     body.password,
-  //   );
-  // }
+  // (3) 프로그래머스
+  @Post("/checkProgrammersLogin")
+  @ApiOperation({
+    summary: "[크롤링-프로그래머스]로그인 체크용",
+    description: "프로그래머스 id, password를 받아서 회원정보 맞는지 체크",
+  })
+  async checkProgrammersLogin(@Body() body) {
+    return await this.userService.checkProgrammersLogin(
+      body.email,
+      body.password,
+    );
+  }
 
-  // @Post("/programmersCrawling")
-  // @ApiOperation({
-  //   summary: "[크롤링-로켓펀치]지원자 정보 크롤링",
-  //   description: "지원자 정보 크롤링",
-  // })
-  // async programmersCrawling(@Body() body) {
-  //   return await this.userService.crawlingProgrammers(
-  //     body.email,
-  //     body.password,
-  //   );
-  // }
+  @Post("/programmersCrawling")
+  @ApiOperation({
+    summary: "[크롤링-로켓펀치]지원자 정보 크롤링",
+    description: "지원자 정보 크롤링",
+  })
+  async programmersCrawling(@Body() body) {
+    return await this.userService.crawlingProgrammers(
+      body.email,
+      body.password,
+    );
+  }
 
   // // (4) 잡플래닛
   // @Post("/checkJobplanetLogin")

@@ -12,7 +12,8 @@ import { wantedCrawling } from "src/crawling/wanted/wantedCrawling";
 import { wantedLoginCheck } from "src/crawling/wanted/checkWantedLogin";
 import { RocketPunchLoginCheck } from "src/crawling/rocketPunch/checkRocketPunchLogin";
 import { CrawlingRocketPunch } from "src/crawling/rocketPunch/rocketPunchCrawling";
-
+import { programmersLoginCheck } from "src/crawling/programmers/checkProgrammersLogin";
+import { programmersCrawling } from "src/crawling/programmers/programmersCrawling";
 @Injectable()
 export class UserService {
   constructor(
@@ -180,29 +181,30 @@ export class UserService {
     }
   }
 
-  // // (3)-1 프로그래머스 로그인
-  // async checkProgrammersLogin(ID: string, PW: string) {
-  //   try {
-  //     const result = await RocketPunchLoginCheck(ID, PW);
-  //     console.log("=====>프로그래머스 로그인 완료");
-  //     return { message: " 프로그래머스 로그인이 확인되었습니다.", result };
-  //   } catch (error) {
-  //     console.log("=====>프로그래머스 로그인 실패");
-  //     throw error;
-  //   }
-  // }
+  // (3)-1 프로그래머스 로그인
+  async checkProgrammersLogin(ID: string, PW: string) {
+    try {
+      const result = await programmersLoginCheck(ID, PW);
+      console.log("=====>프로그래머스 로그인 완료");
+      return { message: " 프로그래머스 로그인이 확인되었습니다.", result };
+    } catch (error) {
+      console.log("=====>프로그래머스 로그인 실패");
+      throw error;
+    }
+  }
 
-  // // (3)-2 프로그래머스
-  // async crawlingProgrammers(id: string, password: string) {
-  //   try {
-  //     const result = await CrawlingProgrammers(id, password);
-  //     console.log("=====>프로그래머스 크롤링 완료");
-  //     return { message: " 프로그래머스 크롤링이 확인되었습니다.", result };
-  //   } catch (error) {
-  //     console.log("=====>프로그래머스 크롤링 실패");
-  //     throw error;
-  //   }
-  // }
+  // (3)-2 프로그래머스
+  async crawlingProgrammers(id: string, password: string) {
+    console.log(id, password);
+    try {
+      const result = await programmersCrawling(id, password);
+      console.log("=====>프로그래머스 크롤링 완료");
+      return { message: " 프로그래머스 크롤링이 확인되었습니다.", result };
+    } catch (error) {
+      console.log("=====>프로그래머스 크롤링 실패");
+      throw error;
+    }
+  }
 
   // // (4)-1 잡플래닛 로그인
   // async checkJobplanetLogin(ID: string, PW: string) {
