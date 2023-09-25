@@ -247,7 +247,7 @@ export async function programmersCrawling(ID: string, PW: string) {
 
   const result = await saveApplicantResumesAndReturnResult(
     page,
-    hrefs.slice(0, 3),
+    hrefs
   );
   console.log("programmers 완료");
   await browser.close();
