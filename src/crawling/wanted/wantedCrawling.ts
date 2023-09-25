@@ -96,6 +96,7 @@ async function downloadResumes(page: Page, resumes) {
   let downloadUrls = [];
   let previewUrls = [];
   let fileNames = [];
+
   for (let resume of resumes.data) {
     const { file_name } = resume;
     try {
@@ -107,27 +108,28 @@ async function downloadResumes(page: Page, resumes) {
       continue;
     }
 
-    const [download] = await Promise.all([
-      page.waitForEvent("download"),
-      page.click('button:has-text("다운로드")'),
-    ]);
-
-    const fileName = await download.suggestedFilename();
-    fileNames.push(fileName);
-    const path = `${fileName}`;
-    await download.saveAs(path);
-
-    const [downloadUrl, previewUrl] = await Promise.all([
-      uploadFileDownload(path),
-      uploadFilePreview(path),
-    ]);
-
-    downloadUrls.push(downloadUrl);
-    previewUrls.push(previewUrl);
     try {
+      const [download] = await Promise.all([
+        page.waitForEvent("download"),
+        page.click('button:has-text("다운로드")'),
+      ]);
+
+      const fileName = await download.suggestedFilename();
+      fileNames.push(fileName);
+      const path = `${fileName}`;
+      await download.saveAs(path);
+
+      const [downloadUrl, previewUrl] = await Promise.all([
+        uploadFileDownload(path),
+        uploadFilePreview(path),
+      ]);
+
+      downloadUrls.push(downloadUrl);
+      previewUrls.push(previewUrl);
       fs.unlinkSync(path);
     } catch (error) {
       console.log(error);
+      continue;
     }
   }
   return [downloadUrls, previewUrls, fileNames];
@@ -196,7 +198,7 @@ async function saveUserResume(page, postId) {
 
 export async function wantedCrawling(ID, PW) {
   const browser = await chromium.launch({
-    headless: false,
+    headless: true,
   });
   const userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";
