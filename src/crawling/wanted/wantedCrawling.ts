@@ -23,7 +23,7 @@ export async function login(page, ID: string, PW: string) {
 
     await (await page.waitForSelector(buttonSelector.passwordInput)).type(PW);
     await (await page.waitForSelector(buttonSelector.submitButton)).click();
-    console.log("로그인 성공");
+    console.log("wanted 로그인 성공");
 
     await page.waitForNavigation();
     return true;
@@ -35,6 +35,7 @@ export async function login(page, ID: string, PW: string) {
 
 //채용중인 공고페이지로 이동
 async function navigateJobPostings(page) {
+  console.log("wanted 채용 페이지 이동");
   await page.goto(
     "https://www.wanted.co.kr/dashboard/recruitment?order=id&status=active",
   );
@@ -221,6 +222,7 @@ export async function wantedCrawling(ID, PW) {
 
     allUserInfo.push(userInfoByJobPosting);
   }
+  console.log("wanted crawling 완료");
   console.log(allUserInfo);
   await browser.close();
   return allUserInfo;

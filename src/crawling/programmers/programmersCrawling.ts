@@ -61,7 +61,7 @@ async function login(page: Page, ID: string, PW: string) {
       throw new Error("로그인 실패");
     }
 
-    console.log("로그인 성공");
+    console.log("programmers 로그인 성공");
     return true;
   } catch (error) {
     console.log(error);
@@ -71,6 +71,7 @@ async function login(page: Page, ID: string, PW: string) {
 
 //채용공고로 이동
 async function navigateJobPostings(page: Page) {
+  console.log("programmers 채용페이지 이동");
   await page.goto("https://business.programmers.co.kr/job_positions");
   await page.locator("button:has-text('닫기')").click();
 }
@@ -87,6 +88,7 @@ async function downloadExcel(page: Page) {
   const fileName = await download.suggestedFilename();
   const downloadPath = path.join(os.homedir(), fileName);
   await download.saveAs(downloadPath);
+  console.log("programmers excel 다운로드 완료");
   return downloadPath;
 }
 
@@ -103,7 +105,7 @@ async function getAllApplicantsHrefs(filePath: string): Promise<string[]> {
   } catch (error) {
     console.log(error);
   }
-
+  console.log("programmers 지원자 링크 가져오기");
   return data
     .filter((row) => row["지원 상태"] === "신규")
     .map((row) => row["링크"]);
@@ -244,7 +246,7 @@ export async function programmersCrawling(ID: string, PW: string) {
   const hrefs = await getAllApplicantsHrefs(downloadPath);
 
   const result = await saveApplicantResumesAndReturnResult(page, hrefs);
-
+  console.log("programmers 완료");
   await browser.close();
   return result;
 }
