@@ -154,7 +154,7 @@ export class UserService {
       }
       const result = await wantedCrawling(id, password);
       console.log("=====>원티드 크롤링 완료");
-      return result;
+      return { message: "원티드 크롤링이 확인되었습니다.", result };
     } catch (error) {
       console.log("=====>원티드 크롤링 실패");
       throw error;
@@ -180,7 +180,7 @@ export class UserService {
       }
       const result = await CrawlingRocketPunch(id, password);
       console.log("=====>로켓펀치 크롤링 완료");
-      return result;
+      return { message: "로켓펀치 크롤링이 확인되었습니다.", result };
     } catch (error) {
       console.log("=====>로켓펀치 크롤링 실패");
       throw error;
