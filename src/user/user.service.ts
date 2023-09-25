@@ -149,6 +149,9 @@ export class UserService {
   // (1)-2 원티드
   async crawlingWanted(id: string, password: string) {
     try {
+      if (!id || !password) {
+        throw new BadRequestException("아이디와 비밀번호를 입력해주세요.");
+      }
       const result = await wantedCrawling(id, password);
       console.log("=====>원티드 크롤링 완료");
       return result;
@@ -172,6 +175,9 @@ export class UserService {
   // (2)-2 로켓펀치
   async crawlingRocketPunch(id: string, password: string) {
     try {
+      if (!id || !password) {
+        throw new BadRequestException("아이디와 비밀번호를 입력해주세요.");
+      }
       const result = await CrawlingRocketPunch(id, password);
       console.log("=====>로켓펀치 크롤링 완료");
       return result;
@@ -197,6 +203,10 @@ export class UserService {
   async crawlingProgrammers(id: string, password: string) {
     console.log(id, password);
     try {
+      if (!id || !password) {
+        throw new BadRequestException("아이디와 비밀번호를 입력해주세요.");
+      }
+
       const result = await programmersCrawling(id, password);
       console.log("=====>프로그래머스 크롤링 완료");
       return { message: " 프로그래머스 크롤링이 확인되었습니다.", result };

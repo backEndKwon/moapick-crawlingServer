@@ -12,7 +12,7 @@ const buttonSelector = {
 };
 
 //로그인
-export async function login(page, ID: string, PW: string) {
+export async function login(page: Page, ID: string, PW: string) {
   try {
     await page.goto(
       "https://id.wanted.jobs/login?before_url=https%3A%2F%2Fwww.wanted.co.kr%2Fdashboard%2Fuser%2Fcheck&redirect_url=https%3A%2F%2Fwww.wanted.co.kr%2Fapi%2Fchaos%2Fauths%2Fv1%2Fcallback%2Fset-token&client_id=3cxYxwiZG2Hys8DvQjwJzxMm&service=dashboard&amp_device_id=undefined",
@@ -34,7 +34,7 @@ export async function login(page, ID: string, PW: string) {
 }
 
 //채용중인 공고페이지로 이동
-async function navigateJobPostings(page) {
+async function navigateJobPostings(page: Page) {
   console.log("wanted 채용 페이지 이동");
   await page.goto(
     "https://www.wanted.co.kr/dashboard/recruitment?order=id&status=active",
@@ -42,7 +42,7 @@ async function navigateJobPostings(page) {
 }
 
 /**채용공고 가져오기*/
-async function getJobPostings(page) {
+async function getJobPostings(page: Page) {
   console.log("채용공고 가져오는 중");
   await page.waitForSelector(
     "td.styled__TableData-sc-10oxjpl-3.kiCEfJ a[data-attribute-id='biz__recruitmentList__position__click']",
@@ -55,7 +55,7 @@ async function getJobPostings(page) {
   for (let element of elements) {
     const text = await element.$eval(
       "span.gtNgFZ span",
-      (node) => node.innerText,
+      (node) => (node as HTMLElement).innerText,
     );
     if (parseInt(text, 10) > 0) {
       const href = await element.evaluate((node) =>
@@ -69,7 +69,7 @@ async function getJobPostings(page) {
 }
 
 /**지원자카드 Id 가져오기*/
-async function getUserCardsId(page, postId) {
+async function getUserCardsId(page: Page, postId: string) {
   const applyUserInfo = await page.evaluate(
     (postId) => {
       const baseUrl = location.href.substring(
@@ -197,7 +197,7 @@ async function saveUserResume(page, postId) {
   return allUserInfo;
 }
 
-export async function wantedCrawling(ID, PW) {
+export async function wantedCrawling(ID: string, PW: string) {
   const browser = await chromium.launch({
     headless: true,
   });
