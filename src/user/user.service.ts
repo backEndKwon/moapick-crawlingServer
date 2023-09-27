@@ -12,7 +12,11 @@ import { wantedCrawling } from "src/crawling/wanted/wantedCrawling";
 import { wantedLoginCheck } from "src/crawling/wanted/checkWantedLogin";
 import { RocketPunchLoginCheck } from "src/crawling/rocketPunch/checkRocketPunchLogin";
 import { CrawlingRocketPunch } from "src/crawling/rocketPunch/rocketPunchCrawling";
-
+import { NinehireLoginCheck } from "src/crawling/ninehire/checkNinehireLogin";
+import { CrawlingNinehirePostId } from "src/crawling/ninehire/ninehirePostIdCrawling";
+import { CrawlingNinehire } from "src/crawling/ninehire/ninehireCrawling";
+import { JobplanetLoginCheck } from "src/crawling/jobplanet/checkjobplanetLogin";
+import { CrawlingJobplanet } from "src/crawling/jobplanet/jobplanetCrawling";
 @Injectable()
 export class UserService {
   constructor(
@@ -139,6 +143,7 @@ export class UserService {
   async checkWantedLogin(ID: string, PW: string) {
     try {
       const result = await wantedLoginCheck(ID, PW);
+      console.log("=====>원티드 로그인 확인")
       return { message: "원티드 로그인이 확인되었습니다.", result };
     } catch (error) {
       console.log("=====>원티드 로그인 실패");
@@ -149,7 +154,7 @@ export class UserService {
   async crawlingWanted(id: string, password: string) {
     try {
       const result = await wantedCrawling(id, password);
-      console.log("=====>원티드 크롤링 완료");
+      console.log("=====>원티드 크롤링 확인");
       return result;
     } catch (error) {
       console.log("=====>원티드 크롤링 실패");
@@ -161,6 +166,7 @@ export class UserService {
   async checkRocketPunchLogin(ID: string, PW: string) {
     try {
       const result = await RocketPunchLoginCheck(ID, PW);
+      console.log("=====>로켓펀치 로그인 확인");
       return { message: " 로켓펀치 로그인이 확인되었습니다.", result };
     } catch (error) {
       console.log("=====>로켓펀치 로그인 실패");
@@ -172,7 +178,7 @@ export class UserService {
   async crawlingRocketPunch(id: string, password: string) {
     try {
       const result = await CrawlingRocketPunch(id, password);
-      console.log("=====>로켓펀치 크롤링 완료");
+      console.log("=====>로켓펀치 크롤링 확인");
       return result;
     } catch (error) {
       console.log("=====>로켓펀치 크롤링 실패");
@@ -184,7 +190,7 @@ export class UserService {
   // async checkProgrammersLogin(ID: string, PW: string) {
   //   try {
   //     const result = await RocketPunchLoginCheck(ID, PW);
-  //     console.log("=====>프로그래머스 로그인 완료");
+  //     console.log("=====>프로그래머스 로그인 확인");
   //     return { message: " 프로그래머스 로그인이 확인되었습니다.", result };
   //   } catch (error) {
   //     console.log("=====>프로그래머스 로그인 실패");
@@ -196,7 +202,7 @@ export class UserService {
   // async crawlingProgrammers(id: string, password: string) {
   //   try {
   //     const result = await CrawlingProgrammers(id, password);
-  //     console.log("=====>프로그래머스 크롤링 완료");
+  //     console.log("=====>프로그래머스 크롤링 확인");
   //     return { message: " 프로그래머스 크롤링이 확인되었습니다.", result };
   //   } catch (error) {
   //     console.log("=====>프로그래머스 크롤링 실패");
@@ -204,27 +210,64 @@ export class UserService {
   //   }
   // }
 
-  // // (4)-1 잡플래닛 로그인
-  // async checkJobplanetLogin(ID: string, PW: string) {
-  //   try {
-  //     const result = await RocketPunchLoginCheck(ID, PW);
-  //     console.log("=====> 잡플래닛 로그인 완료");
-  //     return { message: " 잡플래닛 로그인이 확인되었습니다.", result };
-  //   } catch (error) {
-  //     console.log("=====> 잡플래닛 로그인 실패");
-  //     throw error;
-  //   }
-  // }
+  // (4)-1 잡플래닛 로그인
+  async checkJobplanetLogin(ID: string, PW: string) {
+    try {
+      const result = await JobplanetLoginCheck(ID, PW);
+      console.log("=====> 잡플래닛 로그인 확인");
+      return { message: " 잡플래닛 로그인이 확인되었습니다.", result };
+    } catch (error) {
+      console.log("=====> 잡플래닛 로그인 실패");
+      throw error;
+    }
+  }
 
-  // // (4)-2 잡플래닛
-  // async crawlingJobplanet(id: string, password: string) {
-  //   try {
-  //     const result = await CrawlingJobplanet(id, password);
-  //     console.log("=====> 잡플래닛 크롤링 완료");
-  //     return { message: " 잡플래닛 크롤링이 확인되었습니다.", result };
-  //   } catch (error) {
-  //     console.log("=====> 잡플래닛 크롤링 실패");
-  //     throw error;
-  //   }
-  // }
+  // (4)-2 잡플래닛
+  async crawlingJobplanet(id: string, password: string) {
+    try {
+      const result = await CrawlingJobplanet(id, password);
+      console.log("=====> 잡플래닛 크롤링 확인");
+      return { message: " 잡플래닛 크롤링이 확인되었습니다.", result };
+    } catch (error) {
+      console.log("=====> 잡플래닛 크롤링 실패");
+      throw error;
+    }
+  }
+
+  // 나인하이어 로그인
+  async checkNinehireLogin(ID: string, PW: string) {
+    try {
+      const result = await NinehireLoginCheck(ID, PW);
+      console.log("=====> 나인하이어 로그인 확인");
+      return { message: " 나인하이어 로그인이 확인되었습니다.", result };
+    } catch (error) {
+      console.log("=====> 나인하이어 로그인 실패");
+      throw error;
+    }
+  }
+
+  async crawlingNinehirePostId(id: string, password: string) {
+    try {
+      const result = await CrawlingNinehirePostId(id, password);
+      console.log("=====> 나인하이어 포스팅 아이디 확인");
+      return { message: " 나인하이어 포스팅 아이디  확인되었습니다.", result };
+    } catch (error) {
+      console.log("=====> 나인하이어 포스팅 아이디 실패");
+      throw error;
+    }
+  }
+
+  async crawlingNinehire(id: string, password: string) {
+    try {
+      const result = await CrawlingNinehire(id, password);
+      console.log("=====> 나인하이어 크롤링 확인");
+      return { message: " 나인하이어 크롤링이 확인되었습니다.", result };
+    } catch (error) {
+      console.log("=====> 나인하이어 크롤링 실패");
+      throw error;
+    }
+  }
+
+
+
 }

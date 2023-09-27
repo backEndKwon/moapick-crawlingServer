@@ -1,5 +1,4 @@
-import { error } from "console";
-import { ElementHandle, chromium } from "playwright";
+import { chromium } from "playwright";
 
 const buttonSelector = {
   emailInput: "input[name='email']",
@@ -9,7 +8,7 @@ const buttonSelector = {
 
 export async function RocketPunchLoginCheck(email: string, password: string) {
   const browser = await chromium.launch({
-    headless: true,
+    headless: false,
   });
 
   const userAgent =
@@ -44,7 +43,7 @@ export async function RocketPunchLoginCheck(email: string, password: string) {
     console.log("4");
 
     // 재시도 버튼이 나타날 때까지 대기
-    await page.waitForTimeout(2000); //혹시나 네트워크가 느린 경우에는 초를 늘려줘야함
+    await page.waitForTimeout(5000); //혹시나 네트워크가 느린 경우에는 초를 늘려줘야함
 
     // 클릭 후 버튼의 텍스트 확인
     const currentUrl = await page.url();
