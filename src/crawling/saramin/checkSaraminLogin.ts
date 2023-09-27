@@ -1,13 +1,13 @@
 import { chromium } from "playwright";
 
 const buttonSelector = {
-  idInput: "input[name='user[email]']",
-  passwordInput: "input[name='user[password]']",
-  submitButton: 'input[name="commit"]',
+  idInput: "input[name='id']",
+  passwordInput: "input[name='password']",
+  submitButton: 'button:has-text("로그인")',
   companyButton: "button:has-text('기업회원')",
 };
 
-export async function programmersLoginCheck(ID: string, PW: string) {
+export async function saraminLoginCheck(ID: string, PW: string) {
   const browser = await chromium.launch({
     headless: true,
   });
@@ -19,19 +19,22 @@ export async function programmersLoginCheck(ID: string, PW: string) {
 
   const page = await context.newPage();
   try {
-    await page.goto("https://business.programmers.co.kr/business/login");
+    await page.goto("https://www.saramin.co.kr/zf_user/auth");
+    const companyButton = await page.waitForSelector(
+      buttonSelector.companyButton,
+    );
+
+    await companyButton.click();
 
     await (await page.waitForSelector(buttonSelector.idInput)).fill(ID);
 
     await (await page.waitForSelector(buttonSelector.passwordInput)).fill(PW);
     await (await page.waitForSelector(buttonSelector.submitButton)).click();
 
-    await page.waitForTimeout(1000);
-    const isFailToLogin = await page
-      .locator("span.zrqIfD9Zb-9c7glnjTFOi")
-      .isVisible();
+    const mainUrl = "https://www.saramin.co.kr/zf_user/memcom/index/main";
 
-    if (isFailToLogin) {
+    if ((await page.url()) !== mainUrl) {
+      console.log(await page.url());
       throw new Error("로그인 실패");
     }
 

@@ -38,13 +38,15 @@ export class addCompanyInfoDto {
 
   @ApiProperty({ description: "DTO email/user_id찾기위해" })
   email: string;
-  
-  @ApiProperty({ description: '계정 생성하자마자 2주 trial기간 시작' })
+
+  @ApiProperty({ description: "계정 생성하자마자 2주 trial기간 시작" })
   paymentStartDate: string;
 
-  @ApiProperty({ description: '지불날짜로 부터 금액 확인후 +DAY(기본 첫 TRIAL기간에는 +14일)' })
-  paymentExpirationDate : string;
-  
+  @ApiProperty({
+    description:
+      "지불날짜로 부터 금액 확인후 +DAY(기본 첫 TRIAL기간에는 +14일)",
+  })
+  paymentExpirationDate: string;
 }
 
 // [일반] 로그인 dto

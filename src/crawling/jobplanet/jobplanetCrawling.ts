@@ -2,7 +2,8 @@ import { chromium } from "playwright";
 import { config } from "dotenv";
 import { uploadFileDownload, uploadFilePreview } from "../../lib/aws";
 import * as fs from "fs";
-
+import axios from "axios";
+import { HttpException, HttpStatus } from "@nestjs/common";
 config();
 
 const buttonSelector = {
@@ -182,6 +183,23 @@ async function downloadResumes(page) {
   }
 }
 
+
+//axios 전송
+export async function downloadPdf(url: string, outputPath: string){
+  try {
+    const response = await axios.get(url, {
+      responseType: "arraybuffer",
+    });
+    console.log("===========> ~ response:", response)
+    fs.writeFileSync(outputPath, response.data);
+  } catch (error) {
+    throw new HttpException(
+      "Failed to download PDF",
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
 // 이력서를 따로 올려서 지원자리스트에서 바로 다운로드이력서를 받아오는 경우
 async function downloadResumes_first(page) {
   let downloadUrls = [];
@@ -210,16 +228,16 @@ async function downloadResumes_first(page) {
     for (let { href: pdfLink, fileName, index } of filteredPdfLinksAndNames) {
       console.log("===========> ~ fileName:", fileName);
       console.log("===========> ~ pdfLink:", pdfLink);
-
       // Click the link to trigger download
       await page.click(`a:nth-of-type(${index + 1})`);
-
+      
       // Wait for the download event
       const download = await page.waitForEvent("download");
-
+      
       fileNames.push(fileName);
-
+      
       const path = `${fileName}`;
+      downloadPdf(pdfLink, path)
       await download.saveAs(path);
 
       // 저장된 파일의 경로를 이용하여 URL 생성

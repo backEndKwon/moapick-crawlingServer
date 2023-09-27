@@ -47,7 +47,7 @@ export async function RocketPunchLoginCheck(email: string, password: string) {
 
     // 클릭 후 버튼의 텍스트 확인
     const currentUrl = await page.url();
-    console.log("===========> ~ currentUrl:", currentUrl)
+    console.log("===========> ~ currentUrl:", currentUrl);
 
     let buttonTextAfterClick = null;
     if (currentUrl === "https://www.rocketpunch.com/") {
@@ -73,8 +73,6 @@ export async function RocketPunchLoginCheck(email: string, password: string) {
       await browser.close();
       throw new Error("로그인 실패");
     }
-    
-    
   } catch (error) {
     console.error(error);
     console.log("8");
