@@ -38,8 +38,8 @@ export async function login(page, ID: string, PW: string) {
 //진행중인 채용 공고페이지로 이동
 async function navigateJobPostings(page) {
   await page.goto(
-    // "https://b2b.jobplanet.co.kr/partners/job_management?status=opened",
-    "https://b2b.jobplanet.co.kr/partners/job_management?status=all",
+    "https://b2b.jobplanet.co.kr/partners/job_management?status=opened",
+    // "https://b2b.jobplanet.co.kr/partners/job_management?status=all",
   );
   await page.waitForTimeout(2000);
 }
@@ -86,7 +86,7 @@ async function getUserCardsId(page, postId) {
   let applicantId = [];
 
   await page.goto(
-    `https://b2b.jobplanet.co.kr/partners/applicant_management/${postId}?status=opened`,
+    `https://b2b.jobplanet.co.kr/partners/applicant_management/${postId}?status=rejected_by_career_partner`,
   );
   await page.waitForTimeout(1500);
   const isEmptyListExist =
@@ -125,13 +125,19 @@ async function getUserCardsId(page, postId) {
 }
 
 // 이력서를 따로 올려서 지원자리스트에서 바로 다운로드이력서를 받아오는 경우
-async function downloadResumes(page) {
+async function downloadResumes(page, applicantId) {
   let downloadUrls = [];
   let previewUrls = [];
   let fileNames = [];
+console.log("이력서 따로 올린 지원자 리스트에서 다운로드 시작")
+  const userIdElement = await page.$(`#list_user_${applicantId}`);
+  if (!userIdElement) {
+    throw new Error("Applicant not found");
+  }
 
   try {
-    const fileButtons = await page.$$(".attachment_file");
+    // 특정 applicantId에 해당하는 첨부파일 버튼만 선택
+    const fileButtons = await page.$$(`div.list_item:has(#list_user_${applicantId}) .attachment_file`);
 
     if (fileButtons.length === 0) throw new Error("No attachment files found.");
 
@@ -157,40 +163,39 @@ async function downloadResumes(page) {
         page.click('button:has-text("다운로드")'),
       ]);
 
-      const path = `${fileName}`;
-      await download.saveAs(path);
+     const path = `${fileName}`;
+     await download.saveAs(path);
 
-      // 저장된 파일의 경로를 이용하여 URL 생성
-      const [downloadUrl, previewUrl] = await Promise.all([
-        uploadFileDownload(path),
-        uploadFilePreview(path),
-      ]);
+     // 저장된 파일의 경로를 이용하여 URL 생성
+     const [downloadUrl, previewUrl] = await Promise.all([
+       uploadFileDownload(path),
+       uploadFilePreview(path),
+     ]);
 
-      downloadUrls.push(downloadUrl);
-      previewUrls.push(previewUrl);
+     downloadUrls.push(downloadUrl);
+     previewUrls.push(previewUrl);
 
-      try {
-        fs.unlinkSync(path);
-      } catch (error) {
-        console.log(error);
-      }
-    }
+     try {
+       fs.unlinkSync(path);
+     } catch (error) {
+       console.log(error);
+     }
+   }
 
-    return [downloadUrls, previewUrls, fileNames];
-  } catch (error) {
-    console.error(error.message);
-    return null;
-  }
+   return [downloadUrls, previewUrls, fileNames];
+ } catch (error) {
+   console.error(error.message);
+   return null;
+ }
 }
 
 
-//axios 전송
-export async function downloadPdf(url: string, outputPath: string){
+//미리보기 pdf는 axios 전송
+export async function downloadPdf(url: string, outputPath: string) {
   try {
     const response = await axios.get(url, {
       responseType: "arraybuffer",
     });
-    console.log("===========> ~ response:", response)
     fs.writeFileSync(outputPath, response.data);
   } catch (error) {
     throw new HttpException(
@@ -198,9 +203,9 @@ export async function downloadPdf(url: string, outputPath: string){
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
-};
+}
 
-// 이력서를 따로 올려서 지원자리스트에서 바로 다운로드이력서를 받아오는 경우
+// 잡플래닛 이력양식에 작성한 지원자 + 첨부파일도 따로 올린사람
 async function downloadResumes_first(page) {
   let downloadUrls = [];
   let previewUrls = [];
@@ -229,16 +234,17 @@ async function downloadResumes_first(page) {
       console.log("===========> ~ fileName:", fileName);
       console.log("===========> ~ pdfLink:", pdfLink);
       // Click the link to trigger download
-      await page.click(`a:nth-of-type(${index + 1})`);
-      
+      // await page.click(`a:nth-of-type(${index + 1})`);
+
       // Wait for the download event
-      const download = await page.waitForEvent("download");
-      
+      // const download = await page.waitForEvent("download");
+      // console.log("===========> ~ download:", download)
+
       fileNames.push(fileName);
-      
+
       const path = `${fileName}`;
-      downloadPdf(pdfLink, path)
-      await download.saveAs(path);
+      const urlResponse = await downloadPdf(pdfLink, path);
+      // await download.saveAs(path);
 
       // 저장된 파일의 경로를 이용하여 URL 생성
       const [downloadUrl, previewUrl] = await Promise.all([
@@ -317,21 +323,55 @@ async function saveUserResume(page, postId) {
   let allApplicantInfo = [];
 
   for (let applicantId of applicantIds) {
-    console.log("===========> ~ applicantId:", applicantId);
-    const url = `https://www.jobplanet.co.kr/cv/resumes?type=applicant&applicant_id=${applicantId}`;
-    await page.goto(url);
-    await page.waitForTimeout(2000);
-    const existResume = await page.$(".resume_preview");
-    const url1 = page.url();
-    if (!existResume) {
-      console.log(`해당지원자(${applicantId})는 페이지가 없습니다.`);
-      await page.goBack();
-      continue;
+    let applicantInfo;
+    //모달 제거
+    const modalElement = await page.$(".jf_modal__wrap.jf_shadow2");
+    if (modalElement) {
+      const closeButton = await page.$(".jf_modal__close");
+      if (closeButton) {
+        await closeButton.click();
+        console.log("Modal was present and has been closed.");
+      }
     }
-    let applicantInfo = await crawlingApplicant_first(page);
-    allApplicantInfo.push(applicantInfo);
+    // 지원자의 id를 가져옵니다.
+    const userIdElement = await page.$(`button[id="list_user_${applicantId}"]`);
+
+    if (userIdElement) {
+      try {
+        const url = `https://www.jobplanet.co.kr/cv/resumes?type=applicant&applicant_id=${applicantId}`;
+        await page.goto(url);
+        await page.waitForTimeout(2000);
+
+        // resume_preview 요소가 있는지 확인합니다.
+        const resumePreviewElement = await page.$(".resume_preview");
+
+        if (resumePreviewElement) {
+          console.log(`지원자: ${applicantId} 첫번째 기능으로 크롤링`);
+          applicantInfo = await crawlingApplicant_first(page);
+          allApplicantInfo.push(applicantInfo);
+          // 해당 로직이 끝나면 페이지 뒤로 가기
+          await page.goBack();
+        } else {
+          await page.waitForTimeout(2000);
+          await page.goBack();
+          // 해당 applicanId에 맞는 인원을 찾아서 crawlingApplicant_second 함수 실행
+          console.log(`지원자: ${applicantId} 두번째 기능으로 크롤링`);
+
+          applicantInfo = await crawlingApplicant_second(
+            page,
+            applicantId,
+            postId,
+          );
+          allApplicantInfo.push(applicantInfo);
+        }
+      } catch (error) {
+        console.error(`Error while fetching details: ${error.message}`);
+      }
+    }
   }
+
   console.log("===========> ~ allUserInfo:", allApplicantInfo);
+
   return allApplicantInfo;
 }
 
@@ -385,44 +425,66 @@ async function crawlingApplicant_first(page) {
 }
 
 // ②에 해당하는 지원자 한명씩 정보 가져오기
-async function crawlingApplicant_second(page) {
+async function crawlingApplicant_second(page, applicantId, postId) {
+  console.log("===========> crawlingApplicant_second:", applicantId);
   let applicantInfo = {};
+  await page.waitForTimeout(2000);
+  const url = `https://b2b.jobplanet.co.kr/partners/applicant_management/${postId}?status=rejected_by_career_partner`;
+  await page.goto(url);
+  await page.waitForTimeout(2000);
+  //모달 제거
+  const modalElement = await page.$(".jf_modal__wrap.jf_shadow2");
+  if (modalElement) {
+    const closeButton = await page.$(".jf_modal__close");
+    if (closeButton) {
+      await closeButton.click();
+      console.log("Modal was present and has been closed.");
+    }
+  }
+  const userIdElement = await page.$(`#list_user_${applicantId}`);
 
-  // 이름 가져오기
-  const nameSelector = ".default.user .title_name";
-  const fullText = await page.textContent(nameSelector);
-  const name = fullText.split("(")[0].trim();
+  const dateElement = await page.$(`div.default.user > span.default_text`);
+  const dateText = await dateElement.textContent();
+  const regex = /(\d{4})\. (\d{2})\. (\d{2}) (\d{2}):(\d{2})/;
+  const match = dateText.match(regex);
+  const year = match[1];
+  const month = match[2];
+  const day = match[3];
+
+  // YYYY-MM-DD 형식으로 변환
+  const dateStr = `${year}-${month}-${day}`;
+  console.log("===========> ~ dateStr:", dateStr)
+  if (!userIdElement) {
+    throw new Error("Applicant not found");
+  }
+  const nameElement = await userIdElement.textContent();
+  const name = nameElement.split("(")[0].trim();
 
   applicantInfo["name"] = name;
-
-  // 지원일 가져오기
-  let applicationDate;
-  const applicationDateSelector = ".default.user .default_text";
-  const applicationDateString = await page.textContent(applicationDateSelector);
-  // "지원일: YYYY. MM. DD HH:MM" 형식의 문자열에서 날짜 부분만 추출합니다.
-  const applicationDateMatch = applicationDateString.match(
-    /지원일: (\d{4}. \d{2}. \d{2} \d{2}:\d{2})/,
-  );
-  if (applicationDateMatch && applicationDateMatch[1]) {
-    const originalFormat =
-      applicationDateMatch[1].replace(/\. /g, "-").replace(" ", "T") + ":00Z";
-    // Date 객체를 생성하고 ISO 문자열로 변환합니다.
-    const dateObject = new Date(originalFormat);
-    const isoString = dateObject.toISOString();
-    // "YYYY-MM-DDTHH:MM:SS.sssZ" 형식에서 날짜 부분만 추출합니다.
-    applicationDate = isoString.split("T")[0];
-    applicantInfo["chk_time"] = applicationDate;
-  } else {
-    console.log("지원일 오류 발생");
-  }
+  applicantInfo["chk_time"] = dateStr;
 
   // 첨부파일 다운로드하기
-  const [downloadUrls, previewUrls, fileNames] = await downloadResumes(page);
+
+  const [downloadUrls, previewUrls, fileNames] = await downloadResumes(page, applicantId);
+  console.log("===========> ~ [downloadUrls, previewUrls, fileNames]:", [
+    downloadUrls,
+    previewUrls,
+    fileNames,
+  ]);
   applicantInfo["filePath"] = downloadUrls;
   applicantInfo["previewPath"] = previewUrls;
   applicantInfo["file_name"] = fileNames;
+
   console.log("===========> ~ 세컨드 applicantInfo:", applicantInfo);
   return applicantInfo;
+}
+
+async function waitForSelectorInElement(page, parentElementHandle, selector) {
+  while (true) {
+    const element = await parentElementHandle.$(selector);
+    if (element !== null) return element;
+    else await page.waitForTimeout(500); // wait for half a second before trying again
+  }
 }
 
 export async function CrawlingJobplanet(ID, PW) {

@@ -12,16 +12,13 @@ import { wantedCrawling } from "src/crawling/wanted/wantedCrawling";
 import { wantedLoginCheck } from "src/crawling/wanted/checkWantedLogin";
 import { RocketPunchLoginCheck } from "src/crawling/rocketPunch/checkRocketPunchLogin";
 import { CrawlingRocketPunch } from "src/crawling/rocketPunch/rocketPunchCrawling";
-<<<<<<< HEAD
 import { NinehireLoginCheck } from "src/crawling/ninehire/checkNinehireLogin";
 import { CrawlingNinehirePostId } from "src/crawling/ninehire/ninehirePostIdCrawling";
 import { CrawlingNinehire } from "src/crawling/ninehire/ninehireCrawling";
 import { JobplanetLoginCheck } from "src/crawling/jobplanet/checkjobplanetLogin";
 import { CrawlingJobplanet } from "src/crawling/jobplanet/jobplanetCrawling";
-=======
 import { programmersLoginCheck } from "src/crawling/programmers/checkProgrammersLogin";
 import { programmersCrawling } from "src/crawling/programmers/programmersCrawling";
->>>>>>> ef7ad4b4bf3c1d49b979612cb4d235829f6c9844
 @Injectable()
 export class UserService {
   constructor(
@@ -197,31 +194,7 @@ export class UserService {
     }
   }
 
-<<<<<<< HEAD
-  // // (3)-1 프로그래머스 로그인
-  // async checkProgrammersLogin(ID: string, PW: string) {
-  //   try {
-  //     const result = await RocketPunchLoginCheck(ID, PW);
-  //     console.log("=====>프로그래머스 로그인 확인");
-  //     return { message: " 프로그래머스 로그인이 확인되었습니다.", result };
-  //   } catch (error) {
-  //     console.log("=====>프로그래머스 로그인 실패");
-  //     throw error;
-  //   }
-  // }
 
-  // // (3)-2 프로그래머스
-  // async crawlingProgrammers(id: string, password: string) {
-  //   try {
-  //     const result = await CrawlingProgrammers(id, password);
-  //     console.log("=====>프로그래머스 크롤링 확인");
-  //     return { message: " 프로그래머스 크롤링이 확인되었습니다.", result };
-  //   } catch (error) {
-  //     console.log("=====>프로그래머스 크롤링 실패");
-  //     throw error;
-  //   }
-  // }
-=======
   // (3)-1 프로그래머스 로그인
   async checkProgrammersLogin(ID: string, PW: string) {
     try {
@@ -250,7 +223,6 @@ export class UserService {
       throw error;
     }
   }
->>>>>>> ef7ad4b4bf3c1d49b979612cb4d235829f6c9844
 
   // (4)-1 잡플래닛 로그인
   async checkJobplanetLogin(ID: string, PW: string) {
