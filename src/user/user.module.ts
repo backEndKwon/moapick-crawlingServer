@@ -11,6 +11,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { JwtStrategy } from "src/auth/strategy/jwt-service.strategy";
 import { ConfigService } from "@nestjs/config";
+import { CompanyService } from "src/company/company.service";
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { ConfigService } from "@nestjs/config";
     PassportModule.register({ defaultStrategy: "jwt" }), // PassportModule을 가져옴
   ],
   controllers: [UserController],
-  providers: [UserService, JwtModule, JwtStrategy],
+  providers: [UserService, JwtModule, JwtStrategy, CompanyService],
   exports: [UserService],
 })
 export class UserModule {}

@@ -112,39 +112,6 @@ export class UserController {
     console.log(`${body.email}님이 잡플래닛 크롤링을 시도하였습니다`);
     return await this.userService.crawlingJobplanet(body.email, body.password);
   }
-
-  // 나인하이어
-  @Post("/checkNinehireLogin")
-  @ApiOperation({
-    summary: "[크롤링-나인하이어]로그인 체크용",
-    description: "나인하이어 id, password를 받아서 회원정보 맞는지 체크",
-  })
-  async checkNinehireLogin(@Body() body) {
-    return await this.userService.checkNinehireLogin(body.email, body.password);
-  }
-
-  @Post("/ninehirePostIdCrawling")
-  @ApiOperation({
-    summary: "[크롤링-나인하이어]지원자 등록",
-    description: "지원자 등록용 크롤링",
-  })
-  async ninehirePostIdCrawling(@Body() body) {
-    return await this.userService.crawlingNinehirePostId(
-      body.email,
-      body.password,
-    );
-  }
-
-  @Post("/ninehireCrawling")
-  @ApiOperation({
-    summary: "[크롤링-나인하이어]지원자 등록",
-    description: "지원자 등록용 크롤링",
-  })
-  async ninehireCrawling(@Body() body) {
-    console.log(`${body.email}님이 나인하이어 크롤링을 시도하였습니다`);
-    return await this.userService.crawlingNinehire(body.email, body.password);
-  }
-
   // jwt verify test
   @Get("/mypage")
   @ApiOperation({
@@ -160,3 +127,35 @@ export class UserController {
     return result.result;
   }
 }
+
+// // 나인하이어
+// @Post("/checkNinehireLogin")
+// @ApiOperation({
+//   summary: "[크롤링-나인하이어]로그인 체크용",
+//   description: "나인하이어 id, password를 받아서 회원정보 맞는지 체크",
+// })
+// async checkNinehireLogin(@Body() body) {
+//   return await this.userService.checkNinehireLogin(body.email, body.password);
+// }
+
+// @Post("/ninehirePostIdCrawling")
+// @ApiOperation({
+//   summary: "[크롤링-나인하이어]지원자 등록",
+//   description: "지원자 등록용 크롤링",
+// })
+// async ninehirePostIdCrawling(@Body() body) {
+//   return await this.userService.crawlingNinehirePostId(
+//     body.email,
+//     body.password,
+//   );
+// }
+
+// @Post("/ninehireCrawling")
+// @ApiOperation({
+//   summary: "[크롤링-나인하이어]지원자 등록",
+//   description: "지원자 등록용 크롤링",
+// })
+// async ninehireCrawling(@Body() body) {
+//   console.log(`${body.email}님이 나인하이어 크롤링을 시도하였습니다`);
+//   return await this.userService.crawlingNinehire(body.email, body.password);
+// }

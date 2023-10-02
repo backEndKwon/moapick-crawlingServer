@@ -19,6 +19,7 @@ import { JobplanetLoginCheck } from "src/crawling/jobplanet/checkjobplanetLogin"
 import { CrawlingJobplanet } from "src/crawling/jobplanet/jobplanetCrawling";
 import { programmersLoginCheck } from "src/crawling/programmers/checkProgrammersLogin";
 import { programmersCrawling } from "src/crawling/programmers/programmersCrawling";
+import { CompanyService } from "src/company/company.service";
 @Injectable()
 export class UserService {
   constructor(
@@ -26,6 +27,7 @@ export class UserService {
     private readonly userRepository: Repository<UsersEntity>,
     @InjectRepository(CompanyEntity)
     private readonly companyRepository: Repository<CompanyEntity>,
+    private readonly companyService: CompanyService,
   ) {}
 
   // # 사용자 추가정보 및 회사정보 생성 및 저장
@@ -93,7 +95,7 @@ export class UserService {
         throw new NotFoundException("존재하지 않는 사용자입니다.");
       }
       const userId = userInfo.user_id;
-      const companyInfo = await this.findCompanyInfo(userId);
+      const companyInfo = await this.companyService.findCompanyInfoByUserId(userId);
 
       if (!companyInfo) {
         throw new NotFoundException("존재하지 않는 회사정보입니다.");
@@ -128,11 +130,6 @@ export class UserService {
     return await this.userRepository.update({ email }, { isLogin: false });
   }
 
-  // UserId 로 회사정보 조회
-  async findCompanyInfo(userId: number) {
-    return await this.companyRepository.find({ where: { user_id: userId } });
-  }
-
   // Email로 사용자 조회
   async findByEmail(email: string) {
     const existUser = await this.userRepository.findOne({ where: { email } });
@@ -145,7 +142,7 @@ export class UserService {
   async checkWantedLogin(ID: string, PW: string) {
     try {
       const result = await wantedLoginCheck(ID, PW);
-      console.log("=====>원티드 로그인 확인")
+      console.log("=====>원티드 로그인 확인");
       return { message: "원티드 로그인이 확인되었습니다.", result };
     } catch (error) {
       console.log("=====>원티드 로그인 실패");
@@ -193,7 +190,6 @@ export class UserService {
       throw error;
     }
   }
-
 
   // (3)-1 프로그래머스 로그인
   async checkProgrammersLogin(ID: string, PW: string) {
@@ -247,41 +243,37 @@ export class UserService {
       throw error;
     }
   }
-
-  // 나인하이어 로그인
-  async checkNinehireLogin(ID: string, PW: string) {
-    try {
-      const result = await NinehireLoginCheck(ID, PW);
-      console.log("=====> 나인하이어 로그인 확인");
-      return { message: " 나인하이어 로그인이 확인되었습니다.", result };
-    } catch (error) {
-      console.log("=====> 나인하이어 로그인 실패");
-      throw error;
-    }
-  }
-
-  async crawlingNinehirePostId(id: string, password: string) {
-    try {
-      const result = await CrawlingNinehirePostId(id, password);
-      console.log("=====> 나인하이어 포스팅 아이디 확인");
-      return { message: " 나인하이어 포스팅 아이디  확인되었습니다.", result };
-    } catch (error) {
-      console.log("=====> 나인하이어 포스팅 아이디 실패");
-      throw error;
-    }
-  }
-
-  async crawlingNinehire(id: string, password: string) {
-    try {
-      const result = await CrawlingNinehire(id, password);
-      console.log("=====> 나인하이어 크롤링 확인");
-      return { message: " 나인하이어 크롤링이 확인되었습니다.", result };
-    } catch (error) {
-      console.log("=====> 나인하이어 크롤링 실패");
-      throw error;
-    }
-  }
-
-
-
 }
+
+// // 나인하이어 로그인
+// async checkNinehireLogin(ID: string, PW: string) {
+//   try {
+//     const result = await NinehireLoginCheck(ID, PW);
+//     console.log("=====> 나인하이어 로그인 확인");
+//     return { message: " 나인하이어 로그인이 확인되었습니다.", result };
+//   } catch (error) {
+//     console.log("=====> 나인하이어 로그인 실패");
+//     throw error;
+//   }
+// }
+// async crawlingNinehirePostId(id: string, password: string) {
+//   try {
+//     const result = await CrawlingNinehirePostId(id, password);
+//     console.log("=====> 나인하이어 포스팅 아이디 확인");
+//     return { message: " 나인하이어 포스팅 아이디  확인되었습니다.", result };
+//   } catch (error) {
+//     console.log("=====> 나인하이어 포스팅 아이디 실패");
+//     throw error;
+//   }
+// }
+
+// async crawlingNinehire(id: string, password: string) {
+//   try {
+//     const result = await CrawlingNinehire(id, password);
+//     console.log("=====> 나인하이어 크롤링 확인");
+//     return { message: " 나인하이어 크롤링이 확인되었습니다.", result };
+//   } catch (error) {
+//     console.log("=====> 나인하이어 크롤링 실패");
+//     throw error;
+//   }
+// }

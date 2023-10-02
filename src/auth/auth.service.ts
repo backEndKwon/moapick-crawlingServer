@@ -4,11 +4,8 @@ import {
   Res,
   BadRequestException,
   HttpStatus,
-  UnauthorizedException,
 } from "@nestjs/common";
 import { UsersEntity } from "src/entity/user.entity";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
 import { JwtService } from "@nestjs/jwt";
 import { UserService } from "src/user/user.service";
 import { LoginDto, SignupDto } from "src/dtos/user.dto";
@@ -17,7 +14,6 @@ import { JwtPayload } from "./types/token.type";
 import { config } from "dotenv";
 import { AuthException } from "./exceptions/authException";
 import * as argon from "argon2";
-import { CompanyEntity } from "src/entity/company.entity";
 import { CompanyService } from "src/company/company.service";
 
 config();
