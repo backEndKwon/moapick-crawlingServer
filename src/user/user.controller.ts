@@ -11,6 +11,16 @@ import { AuthService } from "src/auth/auth.service";
 // import { JwtServiceAuthGuard } from 'src/auth/guards/auth.guard';
 import { ApiOperation } from "@nestjs/swagger";
 import { AuthGuard } from "@nestjs/passport";
+import {
+  checkJobplanetLogin,
+  checkProgrammersLogin,
+  checkRocketPunchLogin,
+  checkWantedLogin,
+  crawlingJobplanet,
+  crawlingProgrammers,
+  crawlingRocketPunch,
+  crawlingWanted,
+} from "src/crawling/main.crawling";
 @Controller("user")
 export class UserController {
   constructor(
@@ -26,7 +36,7 @@ export class UserController {
     description: "원티드 id, password를 받아서 회원정보 맞는지 체크",
   })
   async login(@Body() body) {
-    return await this.userService.checkWantedLogin(body.id, body.password);
+    return await checkWantedLogin(body.id, body.password);
   }
 
   @Post("/wantedCrawling")
@@ -36,8 +46,8 @@ export class UserController {
     원티드로 지원한 지원자 정보 가져오기`,
   })
   async wantedCrawling(@Body() body) {
-    console.log(`${body.userEmail}님이 원티드 크롤링을 시도하였습니다`);
-    return await this.userService.crawlingWanted(body.userEmail, body.id, body.password);
+    console.log(`${body.id}님이 원티드 크롤링을 시도하였습니다`);
+    return await crawlingWanted(body.id, body.password);
   }
 
   // (2) 로켓펀치
@@ -47,10 +57,7 @@ export class UserController {
     description: "로켓펀치 id, password를 받아서 회원정보 맞는지 체크",
   })
   async checkRocketPunchLogin(@Body() body) {
-    return await this.userService.checkRocketPunchLogin(
-      body.email,
-      body.password,
-    );
+    return await checkRocketPunchLogin(body.email, body.password);
   }
 
   @Post("/rocketPunchCrawling")
@@ -60,10 +67,7 @@ export class UserController {
   })
   async rocketPunchCrawling(@Body() body) {
     console.log(`${body.email}님이 로켓펀치 크롤링을 시도하였습니다`);
-    return await this.userService.crawlingRocketPunch(
-      body.email,
-      body.password,
-    );
+    return await crawlingRocketPunch(body.email, body.password);
   }
 
   // (3) 프로그래머스
@@ -73,10 +77,7 @@ export class UserController {
     description: "프로그래머스 id, password를 받아서 회원정보 맞는지 체크",
   })
   async checkProgrammersLogin(@Body() body) {
-    return await this.userService.checkProgrammersLogin(
-      body.email,
-      body.password,
-    );
+    return await checkProgrammersLogin(body.email, body.password);
   }
 
   @Post("/programmersCrawling")
@@ -85,10 +86,7 @@ export class UserController {
     description: "지원자 정보 크롤링",
   })
   async programmersCrawling(@Body() body) {
-    return await this.userService.crawlingProgrammers(
-      body.email,
-      body.password,
-    );
+    return await crawlingProgrammers(body.email, body.password);
   }
 
   // (4) 잡플래닛
@@ -98,10 +96,7 @@ export class UserController {
     description: "프로그래머스 id, password를 받아서 회원정보 맞는지 체크",
   })
   async checkJobplanetLogin(@Body() body) {
-    return await this.userService.checkJobplanetLogin(
-      body.email,
-      body.password,
-    );
+    return await checkJobplanetLogin(body.email, body.password);
   }
 
   @Post("/jobplanetCrawling")
@@ -111,9 +106,9 @@ export class UserController {
   })
   async jobplanetCrawling(@Body() body) {
     console.log(`${body.email}님이 잡플래닛 크롤링을 시도하였습니다`);
-    return await this.userService.crawlingJobplanet(body.email, body.password);
+    return await crawlingJobplanet(body.email, body.password);
   }
-  // jwt verify test
+  // 내 정보조회(프로필 및 계정 전시용)
   @Get("/mypage")
   @ApiOperation({
     summary: "[일반] 내 정보조회",
@@ -124,7 +119,6 @@ export class UserController {
     const token = Authorization.split(" ")[1];
     const decodedToken = await this.authService.decodeToken(token);
     const result = await this.userService.getMypage(decodedToken);
-    console.log("===========> ~ result.result:", result.result);
     return result.result;
   }
 }

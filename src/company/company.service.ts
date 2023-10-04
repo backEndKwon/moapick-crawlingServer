@@ -19,4 +19,26 @@ export class CompanyService {
   async findCompanyInfoByEid(eid: string) {
     return await this.companyRepository.findOne({ where: { eid } });
   }
+  // 회사정보 make(addCompanyInfo)
+  async createCompanyInfo(
+    companyName: string,
+    existUserId: number,
+    eid: string,
+    startDate: Date,
+    expirationDate: string,
+  ) {
+    return await this.companyRepository.create({
+      companyName,
+      user_id: existUserId,
+      eid: eid,
+      plan: "Trial", //tiral은 2주 무료
+      isPaid: false,
+      paymentStartDate: startDate.toISOString(),
+      paymentExpirationDate: expirationDate,
+    });
+  }
+  // 회사정보 save(addCompanyInfo)
+  async saveCompanyInfo(companyInfo) {
+    return await this.companyRepository.save(companyInfo);
+  }
 }

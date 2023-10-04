@@ -49,9 +49,9 @@ export class AuthService {
         email: signupDto.email,
         name: signupDto.name,
         password: hashedPassword,
-        // isMarketingAgreement: signupDto.isMarketingAgreement,
         isPrivacyPolicyAgreement: signupDto.isPrivacyPolicyAgreement,
         isTermsAgreement: signupDto.isTermsAgreement,
+        // isMarketingAgreement: signupDto.isMarketingAgreement, // 추후 마케팅 동의시 추가
       };
       await this.userService.saveSignUpUser(userInfo);
 
