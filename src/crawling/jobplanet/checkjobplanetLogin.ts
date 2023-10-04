@@ -8,7 +8,7 @@ const buttonSelector = {
 
 export async function JobplanetLoginCheck(email: string, password: string) {
   const browser = await chromium.launch({
-    headless: false,
+    headless: true,
   });
 
   const userAgent =
@@ -53,7 +53,6 @@ export async function JobplanetLoginCheck(email: string, password: string) {
     console.log("로그인 성공");
     await browser.close();
     return true;
-
   } catch (error) {
     console.error(error);
     console.log("8");

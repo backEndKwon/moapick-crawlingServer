@@ -73,57 +73,66 @@ async function navigateJobPostings(page) {
     await page.type(emailInputSelector, applicantInfo.email);
     await page.waitForSelector(phoneInputSelector);
     await page.type(phoneInputSelector, applicantInfo.phone);
-    page.waitForTimeout(1500)
-    const pdfUrl = "https://d1elz4g2bnstoc.cloudfront.net/preview_%EC%B5%9C%EC%97%AC%EB%9E%8C%201.pdf";
+    page.waitForTimeout(1500);
+    const pdfUrl =
+      "https://d1elz4g2bnstoc.cloudfront.net/preview_%EC%B5%9C%EC%97%AC%EB%9E%8C%201.pdf";
 
     // 해당 요소의 셀렉터를 설정합니다.
-    const fileUploadButtonSelector = ".FileUploadInput__InputButton-sc-b6483d2a-1.hvaPRJ span";
-    
-    await page.evaluate(({selector, url}) => {
-      // 해당 요소를 찾습니다.
-      const element = document.querySelector(selector);
-    
-      if (element) {
-        // strong 태그 생성
-        const newElement = document.createElement('strong');
-        newElement.textContent = url;
-    
-        // 기존 span 태그 대체
-        element.parentNode.replaceChild(newElement, element);
-        
-        // svg 요소 수정
-        const svgElement = document.querySelector('.IconButton__Container-sc-2996e775-0.ddpPXT svg');
-        if(svgElement){
-          svgElement.setAttribute('width', '12');
-          svgElement.setAttribute('height', '12');
-          svgElement.setAttribute('viewBox', '0 0 12 12');
-    
-          const pathElement = svgElement.querySelector('path');
-          if(pathElement){
-            pathElement.setAttribute("d", "M9.53033 3.53033C9.82322 3.23744 9.82322 2.76256 9.53033 2.46967C9.23743 2.17678 8.76256 2.17678 8.46967 2.46967L6 4.93934L3.53033 2.46967C3.23744 2.17678 2.76256 2.17678 2.46967 2.46967C2.17678 2.76256 2.17678 3.23744 2.46967 3.53033L4.93934 6L2.46967 8.46967C2.17678 8.76256 2.17678 9.23743 2.46967 9.53033C2.76256 9.82322 3.23744 9.82322 3.53033 9.53033L6 7.06066L8.46967 9.53033C8.76256 9.82322 9.23743 9.82322 9.53033 9.53033C9.82322 9.23743 9.82322 8.76256 9.53033 8.46967L7.06066 6L9.53033 3.53033Z");
+    const fileUploadButtonSelector =
+      ".FileUploadInput__InputButton-sc-b6483d2a-1.hvaPRJ span";
+
+    await page.evaluate(
+      ({ selector, url }) => {
+        // 해당 요소를 찾습니다.
+        const element = document.querySelector(selector);
+
+        if (element) {
+          // strong 태그 생성
+          const newElement = document.createElement("strong");
+          newElement.textContent = url;
+
+          // 기존 span 태그 대체
+          element.parentNode.replaceChild(newElement, element);
+
+          // svg 요소 수정
+          const svgElement = document.querySelector(
+            ".IconButton__Container-sc-2996e775-0.ddpPXT svg",
+          );
+          if (svgElement) {
+            svgElement.setAttribute("width", "12");
+            svgElement.setAttribute("height", "12");
+            svgElement.setAttribute("viewBox", "0 0 12 12");
+
+            const pathElement = svgElement.querySelector("path");
+            if (pathElement) {
+              pathElement.setAttribute(
+                "d",
+                "M9.53033 3.53033C9.82322 3.23744 9.82322 2.76256 9.53033 2.46967C9.23743 2.17678 8.76256 2.17678 8.46967 2.46967L6 4.93934L3.53033 2.46967C3.23744 2.17678 2.76256 2.17678 2.46967 2.46967C2.17678 2.76256 2.17678 3.23744 2.46967 3.53033L4.93934 6L2.46967 8.46967C2.17678 8.76256 2.17678 9.23743 2.46967 9.53033C2.76256 9.82322 3.23744 9.82322 3.53033 9.53033L6 7.06066L8.46967 9.53033C8.76256 9.82322 9.23743 9.82322 9.53033 9.53033C9.82322 9.23743 9.82322 8.76256 9.53033 8.46967L7.06066 6L9.53033 3.53033Z",
+              );
+            }
           }
         }
-        
-      }
-    }, {selector: fileUploadButtonSelector, url: pdfUrl});
-// // 지원 경로 드롭다운 메뉴가 나타날 때까지 기다립니다.
-// const refererDropdownMenu = ".Select__Container-sc-770e687d-0.dtNJsL";
-// await page.waitForSelector(refererDropdownMenu, {timeout: 5000});
-    
-// // 일정 시간 동안 기다립니다.
-// await page.waitForTimeout(1500);
+      },
+      { selector: fileUploadButtonSelector, url: pdfUrl },
+    );
+    // // 지원 경로 드롭다운 메뉴가 나타날 때까지 기다립니다.
+    // const refererDropdownMenu = ".Select__Container-sc-770e687d-0.dtNJsL";
+    // await page.waitForSelector(refererDropdownMenu, {timeout: 5000});
 
-// // 해당 요소를 클릭합니다.
-// await page.click(refererDropdownMenu);// await page.waitForSelector(refererDropdownMenu);
-// page.waitForTimeout(1500)
-// // 드롭다운 메뉴를 클릭합니다.
+    // // 일정 시간 동안 기다립니다.
+    // await page.waitForTimeout(1500);
 
-//     // // '직접 입력' 옵션이 나타날 때까지 기다립니다.
-//     const directInputOption = ".ant-dropdown-menu-item"; 
-//     // await page.waitForSelector(directInputOption);
+    // // 해당 요소를 클릭합니다.
+    // await page.click(refererDropdownMenu);// await page.waitForSelector(refererDropdownMenu);
+    // page.waitForTimeout(1500)
+    // // 드롭다운 메뉴를 클릭합니다.
 
-//     // // '직접 입력' 옵션을 클릭합니다.
-//     await page.click(directInputOption);
+    //     // // '직접 입력' 옵션이 나타날 때까지 기다립니다.
+    //     const directInputOption = ".ant-dropdown-menu-item";
+    //     // await page.waitForSelector(directInputOption);
+
+    //     // // '직접 입력' 옵션을 클릭합니다.
+    //     await page.click(directInputOption);
 
     // // '직접 입력' 필드가 나타날 때까지 기다립니다.
     // const refererInputSelector = 'input[placeholder="선택해주세요."]';
@@ -136,7 +145,7 @@ async function navigateJobPostings(page) {
 
 export async function CrawlingNinehire(ID, PW) {
   const browser = await chromium.launch({
-    headless: false,
+    headless: true,
   });
   const userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";

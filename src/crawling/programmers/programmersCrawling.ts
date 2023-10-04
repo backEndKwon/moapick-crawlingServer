@@ -245,10 +245,7 @@ export async function programmersCrawling(ID: string, PW: string) {
   const downloadPath = await downloadExcel(page);
   const hrefs = await getAllApplicantsHrefs(downloadPath);
 
-  const result = await saveApplicantResumesAndReturnResult(
-    page,
-    hrefs
-  );
+  const result = await saveApplicantResumesAndReturnResult(page, hrefs);
   console.log("programmers 완료");
   await browser.close();
   return result;
