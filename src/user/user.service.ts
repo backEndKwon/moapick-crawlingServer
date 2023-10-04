@@ -95,7 +95,9 @@ export class UserService {
         throw new NotFoundException("존재하지 않는 사용자입니다.");
       }
       const userId = userInfo.user_id;
-      const companyInfo = await this.companyService.findCompanyInfoByUserId(userId);
+      const companyInfo = await this.companyService.findCompanyInfoByUserId(
+        userId,
+      );
 
       if (!companyInfo) {
         throw new NotFoundException("존재하지 않는 회사정보입니다.");
@@ -237,7 +239,7 @@ export class UserService {
     try {
       const result = await CrawlingJobplanet(id, password);
       console.log("=====> 잡플래닛 크롤링 확인");
-      return { message: " 잡플래닛 크롤링이 확인되었습니다.", result };
+      return result;
     } catch (error) {
       console.log("=====> 잡플래닛 크롤링 실패");
       throw error;
