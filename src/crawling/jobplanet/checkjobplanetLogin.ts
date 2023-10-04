@@ -53,7 +53,6 @@ export async function JobplanetLoginCheck(email: string, password: string) {
     console.log("로그인 성공");
     await browser.close();
     return true;
-
   } catch (error) {
     console.error(error);
     console.log("8");

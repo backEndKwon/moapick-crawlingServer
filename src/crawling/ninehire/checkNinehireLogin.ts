@@ -1,4 +1,4 @@
-import {chromium } from "playwright";
+import { chromium } from "playwright";
 
 export async function NinehireLoginCheck(email: string, password: string) {
   const browser = await chromium.launch({
@@ -33,9 +33,9 @@ export async function NinehireLoginCheck(email: string, password: string) {
     const submitButton = await page.waitForSelector(
       ".Button-sc-37786504-0.login__LoginButton-sc-e12edbee-8.eDiVOZ.KGgOm",
     );
-    
+
     await submitButton.click();
-    
+
     console.log("4");
 
     // 잠시 대기
@@ -46,7 +46,7 @@ export async function NinehireLoginCheck(email: string, password: string) {
         hasText: "잘못된 로그인 정보입니다. 로그인 정보를 확인해 주세요.",
       })
       .isVisible();
-    console.log("===========> ~ isLoginFailVisible:", isLoginFailVisible)
+    console.log("===========> ~ isLoginFailVisible:", isLoginFailVisible);
 
     if (!isLoginFailVisible) {
       throw new Error("잘못된 로그인 정보입니다. 로그인 정보를 확인해 주세요.");

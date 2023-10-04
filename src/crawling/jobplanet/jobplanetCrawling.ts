@@ -129,7 +129,7 @@ async function downloadResumes(page, applicantId) {
   let downloadUrls = [];
   let previewUrls = [];
   let fileNames = [];
-console.log("이력서 따로 올린 지원자 리스트에서 다운로드 시작")
+  console.log("이력서 따로 올린 지원자 리스트에서 다운로드 시작");
   const userIdElement = await page.$(`#list_user_${applicantId}`);
   if (!userIdElement) {
     throw new Error("Applicant not found");
@@ -137,7 +137,9 @@ console.log("이력서 따로 올린 지원자 리스트에서 다운로드 시�
 
   try {
     // 특정 applicantId에 해당하는 첨부파일 버튼만 선택
-    const fileButtons = await page.$$(`div.list_item:has(#list_user_${applicantId}) .attachment_file`);
+    const fileButtons = await page.$$(
+      `div.list_item:has(#list_user_${applicantId}) .attachment_file`,
+    );
 
     if (fileButtons.length === 0) throw new Error("No attachment files found.");
 
@@ -163,32 +165,31 @@ console.log("이력서 따로 올린 지원자 리스트에서 다운로드 시�
         page.click('button:has-text("다운로드")'),
       ]);
 
-     const path = `${fileName}`;
-     await download.saveAs(path);
+      const path = `${fileName}`;
+      await download.saveAs(path);
 
-     // 저장된 파일의 경로를 이용하여 URL 생성
-     const [downloadUrl, previewUrl] = await Promise.all([
-       uploadFileDownload(path),
-       uploadFilePreview(path),
-     ]);
+      // 저장된 파일의 경로를 이용하여 URL 생성
+      const [downloadUrl, previewUrl] = await Promise.all([
+        uploadFileDownload(path),
+        uploadFilePreview(path),
+      ]);
 
-     downloadUrls.push(downloadUrl);
-     previewUrls.push(previewUrl);
+      downloadUrls.push(downloadUrl);
+      previewUrls.push(previewUrl);
 
-     try {
-       fs.unlinkSync(path);
-     } catch (error) {
-       console.log(error);
-     }
-   }
+      try {
+        fs.unlinkSync(path);
+      } catch (error) {
+        console.log(error);
+      }
+    }
 
-   return [downloadUrls, previewUrls, fileNames];
- } catch (error) {
-   console.error(error.message);
-   return null;
- }
+    return [downloadUrls, previewUrls, fileNames];
+  } catch (error) {
+    console.error(error.message);
+    return null;
+  }
 }
-
 
 //미리보기 pdf는 axios 전송
 export async function downloadPdf(url: string, outputPath: string) {
@@ -458,7 +459,7 @@ async function crawlingApplicant_second(page, applicantId, postId) {
 
   // YYYY-MM-DD 형식으로 변환
   const dateStr = `${year}-${month}-${day}`;
-  console.log("===========> ~ dateStr:", dateStr)
+  console.log("===========> ~ dateStr:", dateStr);
   if (!userIdElement) {
     throw new Error("Applicant not found");
   }
@@ -470,7 +471,10 @@ async function crawlingApplicant_second(page, applicantId, postId) {
 
   // 첨부파일 다운로드하기
 
-  const [downloadUrls, previewUrls, fileNames] = await downloadResumes(page, applicantId);
+  const [downloadUrls, previewUrls, fileNames] = await downloadResumes(
+    page,
+    applicantId,
+  );
   console.log("===========> ~ [downloadUrls, previewUrls, fileNames]:", [
     downloadUrls,
     previewUrls,

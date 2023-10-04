@@ -252,7 +252,7 @@ export class UserService {
     try {
       const result = await CrawlingJobplanet(id, password);
       console.log("=====> 잡플래닛 크롤링 확인");
-      return { message: " 잡플래닛 크롤링이 확인되었습니다.", result };
+      return result;
     } catch (error) {
       console.log("=====> 잡플래닛 크롤링 실패");
       throw error;
