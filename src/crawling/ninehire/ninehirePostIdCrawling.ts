@@ -68,7 +68,7 @@ async function findOpeningPostId(page) {
 
 export async function CrawlingNinehirePostId(ID, PW) {
   const browser = await chromium.launch({
-    headless: false,
+    headless: true,
   });
   const userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";

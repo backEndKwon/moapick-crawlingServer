@@ -32,11 +32,12 @@ export class UserController {
   @Post("/wantedCrawling")
   @ApiOperation({
     summary: "[크롤링-원티드]지원자 가져오기용",
-    description: "원티드로 지원한 지원자 정보 가져오기",
+    description: `body값에는 user의 채용사이트계정(id,password)과 회원가입시 등록한 email을 받아온다.
+    원티드로 지원한 지원자 정보 가져오기`,
   })
   async wantedCrawling(@Body() body) {
-    console.log(`${body.id}님이 원티드 크롤링을 시도하였습니다`);
-    return await this.userService.crawlingWanted(body.id, body.password);
+    console.log(`${body.userEmail}님이 원티드 크롤링을 시도하였습니다`);
+    return await this.userService.crawlingWanted(body.userEmail, body.id, body.password);
   }
 
   // (2) 로켓펀치

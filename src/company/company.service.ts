@@ -14,4 +14,9 @@ export class CompanyService {
   async findCompanyInfoByUserId(user_id: number) {
     return await this.companyRepository.findOne({ where: { user_id } });
   }
+
+  // eid로 회사정보 조회
+  async findCompanyInfoByEid(eid: string) {
+    return await this.companyRepository.findOne({ where: { eid } });
+  }
 }

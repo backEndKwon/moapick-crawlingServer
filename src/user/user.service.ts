@@ -50,6 +50,13 @@ export class UserService {
       if (!existUser) {
         throw new NotFoundException("존재하지 않는 사용자입니다.");
       }
+      const existCompany = await this.companyService.findCompanyInfoByEid(eid);
+      if (existCompany) {
+        throw new BadRequestException(
+          "현재는 회사당 하나의 계정만 생성 가능합니다. 기타 문의사항은 채널톡으로 문의부탁드립니다.",
+        );
+      }
+
       // ⓐ 전화번호는 user Table에 저장
       existUser.phone = phone;
       await this.userRepository.save(existUser);
@@ -95,7 +102,9 @@ export class UserService {
         throw new NotFoundException("존재하지 않는 사용자입니다.");
       }
       const userId = userInfo.user_id;
-      const companyInfo = await this.companyService.findCompanyInfoByUserId(userId);
+      const companyInfo = await this.companyService.findCompanyInfoByUserId(
+        userId,
+      );
 
       if (!companyInfo) {
         throw new NotFoundException("존재하지 않는 회사정보입니다.");
@@ -150,11 +159,17 @@ export class UserService {
     }
   }
   // (1)-2 원티드
-  async crawlingWanted(id: string, password: string) {
+  async crawlingWanted(userEmail: string, id: string, password: string) {
     try {
       if (!id || !password) {
         throw new BadRequestException("아이디와 비밀번호를 입력해주세요.");
       }
+  /* user계정 생성할 때 생성된 company paymentStartDate 를 기반으로 trial 체크
+  2주 경과시 사용 못하게 막기
+  2주 미만시 이용가능
+  */
+      const verifyUser = await this.findByEmail(userEmail);
+  
       const result = await wantedCrawling(id, password);
       console.log("=====>원티드 크롤링 확인");
       return result;

@@ -451,6 +451,11 @@ async function crawlingApplicant_second(page, applicantId, postId) {
   const month = match[2];
   const day = match[3];
 
+  const positionElement = await page.$('.title_txt');
+  const positionText = positionElement ? await positionElement.textContent() : '';
+  applicantInfo["position"] = positionText;
+
+
   // YYYY-MM-DD 형식으로 변환
   const dateStr = `${year}-${month}-${day}`;
   console.log("===========> ~ dateStr:", dateStr)
@@ -489,7 +494,7 @@ async function waitForSelectorInElement(page, parentElementHandle, selector) {
 
 export async function CrawlingJobplanet(ID, PW) {
   const browser = await chromium.launch({
-    headless: false,
+    headless: true,
   });
   const userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";

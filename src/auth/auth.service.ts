@@ -41,7 +41,6 @@ export class AuthService {
     if (existUser) {
       throw new BadRequestException("이미 가입된 이메일입니다.");
     }
-
     try {
       const hashedPassword = await argon.hash(signupDto.password);
 

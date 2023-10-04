@@ -8,7 +8,7 @@ const buttonSelector = {
 
 export async function RocketPunchLoginCheck(email: string, password: string) {
   const browser = await chromium.launch({
-    headless: false,
+    headless: true,
   });
 
   const userAgent =

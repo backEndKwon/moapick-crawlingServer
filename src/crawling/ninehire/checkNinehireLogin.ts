@@ -2,7 +2,7 @@ import {chromium } from "playwright";
 
 export async function NinehireLoginCheck(email: string, password: string) {
   const browser = await chromium.launch({
-    headless: false,
+    headless: true,
   });
 
   const userAgent =
