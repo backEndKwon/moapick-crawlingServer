@@ -25,7 +25,7 @@ export async function login(page: Page, ID: string, PW: string) {
     await (await page.waitForSelector(buttonSelector.submitButton)).click();
     console.log("wanted 로그인 성공");
 
-    await page.waitForNavigation();
+    await page.waitForURL("https://www.wanted.co.kr/dashboard/user/check");
     return true;
   } catch (error) {
     console.log(error);
@@ -187,7 +187,7 @@ async function saveUserResume(page, postId) {
       page,
       resumes,
     );
-
+    console.log(`${fileNames} 다운로드 완료`);
     userInfo["file_name"] = fileNames;
     userInfo["filePath"] = downloadUrls;
     userInfo["previewPath"] = previewUrls;
@@ -199,7 +199,7 @@ async function saveUserResume(page, postId) {
 
 export async function wantedCrawling(ID: string, PW: string) {
   const browser = await chromium.launch({
-    headless: true,
+    headless: false,
   });
   const userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";
@@ -219,7 +219,7 @@ export async function wantedCrawling(ID: string, PW: string) {
 
   for (let postId of applyPostIds) {
     const userInfoByJobPosting = await saveUserResume(page, postId);
-
+    console.log("===========> ~ userInfoByJobPosting:", userInfoByJobPosting);
     allUserInfo.push(userInfoByJobPosting);
   }
   console.log("wanted crawling 완료");
