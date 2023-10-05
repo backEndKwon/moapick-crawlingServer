@@ -56,6 +56,11 @@ export async function RocketPunchLoginCheck(email: string, password: string) {
       await browser.close();
       return true;
     }
+    if (currentUrl === "https://www.rocketpunch.com/verify_phone") {
+      console.log("휴대전화 인증 필요");
+      await browser.close();
+      return false;
+    }
     try {
       // 재시도 버튼을 다시 찾아냅니다.
       const retryButton = await page.waitForSelector(
