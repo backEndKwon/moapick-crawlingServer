@@ -7,14 +7,6 @@ import { UsersEntity } from "src/entity/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { SignupDto, addCompanyInfoDto } from "src/dtos/user.dto";
-import { wantedCrawling } from "src/crawling/wanted/wantedCrawling";
-import { wantedLoginCheck } from "src/crawling/wanted/checkWantedLogin";
-import { RocketPunchLoginCheck } from "src/crawling/rocketPunch/checkRocketPunchLogin";
-import { CrawlingRocketPunch } from "src/crawling/rocketPunch/rocketPunchCrawling";
-import { JobplanetLoginCheck } from "src/crawling/jobplanet/checkjobplanetLogin";
-import { CrawlingJobplanet } from "src/crawling/jobplanet/jobplanetCrawling";
-import { programmersLoginCheck } from "src/crawling/programmers/checkProgrammersLogin";
-import { programmersCrawling } from "src/crawling/programmers/programmersCrawling";
 import { CompanyService } from "src/company/company.service";
 
 /* 나인하이어는 추후 api 연동 가능여부 체크후 진행 */
@@ -76,6 +68,7 @@ export class UserService {
       const startDate = existUser.createdAt;
       const startDatea = new Date(startDate); // 예시로 주어진 시작 날짜
 
+      /* 무료제공 : 2주 trial */
       const expirationDateTimestamp =
         startDatea.getTime() + 14 * 24 * 60 * 60 * 1000; // 현재 시간에서 14일 후의 타임스탬프
       const expirationDate = new Date(expirationDateTimestamp).toISOString();
@@ -98,14 +91,6 @@ export class UserService {
   }
   catch(err) {
     console.log("사용자 추가정보 생성 및 저장 실패", err);
-  }
-
-  /* 전화번호 11자리 유효성 검사(프론트에서 한번 걸러줌) */
-  async checkPhoneNumber(phone: string) {
-    const phoneRegex = /^\d{11}$/;
-    if (!phoneRegex.test(phone)) {
-      throw new BadRequestException("전화번호를 정확히 입력해주세요.");
-    }
   }
 
   // # 사용자 및 회사정보 조회
@@ -136,6 +121,7 @@ export class UserService {
     }
   }
 
+  /* 사업자등록번호 유효성 검사 */
   async checkCorporateEidNumber(eid: string) {
     var numberMap = eid
       .replace(/-/gi, "")
@@ -161,6 +147,14 @@ export class UserService {
     }
 
     return false;
+  }
+
+  /* 전화번호 11자리 유효성 검사(프론트에서 한번 걸러줌) */
+  async checkPhoneNumber(phone: string) {
+    const phoneRegex = /^\d{11}$/;
+    if (!phoneRegex.test(phone)) {
+      throw new BadRequestException("전화번호를 정확히 입력해주세요.");
+    }
   }
 
   /* 추후 Repository로 분리 */

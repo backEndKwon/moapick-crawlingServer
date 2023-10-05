@@ -86,6 +86,7 @@ export class UserController {
     description: "지원자 정보 크롤링",
   })
   async programmersCrawling(@Body() body) {
+    console.log(`${body.email}님이 프로그래머스 크롤링을 시도하였습니다`);
     return await crawlingProgrammers(body.email, body.password);
   }
 
@@ -108,13 +109,14 @@ export class UserController {
     console.log(`${body.email}님이 잡플래닛 크롤링을 시도하였습니다`);
     return await crawlingJobplanet(body.email, body.password);
   }
+
   // 내 정보조회(프로필 및 계정 전시용)
   @Get("/mypage")
   @ApiOperation({
     summary: "[일반] 내 정보조회",
     description: "[일반] 본인 및 회사 정보 조회, verify까지는 필요 없음",
   })
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(""))
   async getMypage(@Headers("Authorization") Authorization: string) {
     const token = Authorization.split(" ")[1];
     const decodedToken = await this.authService.decodeToken(token);
