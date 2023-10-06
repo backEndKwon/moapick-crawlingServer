@@ -8,7 +8,7 @@ const buttonSelector = {
 
 export async function wantedLoginCheck(ID: string, PW: string) {
   const browser = await chromium.launch({
-    headless: true,
+    headless: false,
   });
   const userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";
@@ -18,9 +18,7 @@ export async function wantedLoginCheck(ID: string, PW: string) {
 
   const page = await context.newPage();
   try {
-    await page.goto(
-      "https://id.wanted.jobs/login?before_url=https%3A%2F%2Fwww.wanted.co.kr%2Fdashboard%2Fuser%2Fcheck&redirect_url=https%3A%2F%2Fwww.wanted.co.kr%2Fapi%2Fchaos%2Fauths%2Fv1%2Fcallback%2Fset-token&client_id=3cxYxwiZG2Hys8DvQjwJzxMm&service=dashboard&amp_device_id=undefined",
-    );
+    await page.goto("https://id.wanted.jobs/login");
 
     await (await page.waitForSelector(buttonSelector.emailInput)).type(ID);
     await (await page.waitForSelector(buttonSelector.submitButton)).click();
@@ -42,10 +40,17 @@ export async function wantedLoginCheck(ID: string, PW: string) {
 
     //비밀번호 맞는지 체크
     console.log("비밀번호 체크");
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000);
+    // // 로컬에서는 "비밀번호가 일치하지 않습니다."
+    // const isWrongPassWordVisible = await page
+    //   .locator(".css-1u2lazp", {
+    //     hasText: "비밀번호가 일치하지 않습니다.",
+    //   })
+    //   .isVisible();
+    // 서버에서는 "Password does not match"
     const isWrongPassWordVisible = await page
       .locator(".css-1u2lazp", {
-        hasText: "비밀번호가 일치하지 않습니다.",
+        hasText: "Password does not match",
       })
       .isVisible();
 
