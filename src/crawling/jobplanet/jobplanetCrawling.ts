@@ -4,6 +4,7 @@ import { uploadFileDownload, uploadFilePreview } from "../../lib/aws";
 import * as fs from "fs";
 import axios from "axios";
 import { HttpException, HttpStatus } from "@nestjs/common";
+import { commonSetting } from "../common";
 config();
 
 const buttonSelector = {
@@ -507,7 +508,7 @@ async function crawlingApplicant_second(page, applicantId, postId, status) {
 
 export async function CrawlingJobplanet(ID, PW) {
   const browser = await chromium.launch({
-    headless: false,
+    headless: commonSetting,
   });
   const userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";

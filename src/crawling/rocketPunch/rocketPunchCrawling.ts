@@ -4,6 +4,7 @@ import { uploadFileDownload, uploadFilePreview } from "../../lib/aws";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { commonSetting } from "../common";
 config();
 
 const buttonSelector = {
@@ -207,7 +208,7 @@ async function saveApplicantResumesAndReturnResult(page, userCardIds) {
 //result
 export async function CrawlingRocketPunch(ID, PW) {
   const browser = await chromium.launch({
-    headless: true,
+    headless: commonSetting,
   });
   const userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";

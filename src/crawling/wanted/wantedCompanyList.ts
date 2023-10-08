@@ -1,13 +1,14 @@
 import { chromium } from 'playwright';
 import * as fs from 'fs';
 import * as xlsx from 'xlsx';
+import { commonSetting } from '../common';
 
 export async function crawlingWantedCompanyList() {
   
   try{
 
     const browser = await chromium.launch({
-        headless: false,
+        headless: commonSetting,
       });  const context = await browser.newContext();
   const page = await context.newPage();
   await page.goto('https://insight.wanted.co.kr/now-hiring-companies');

@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { commonSetting } from "../common";
 
 const buttonSelector = {
   emailInput: "input[name='email']",
@@ -8,7 +9,7 @@ const buttonSelector = {
 
 export async function wantedLoginCheck(ID: string, PW: string) {
   const browser = await chromium.launch({
-    headless: false,
+    headless: commonSetting,
   });
   const userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";

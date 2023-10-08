@@ -8,6 +8,7 @@ import axios from "axios";
 import * as dayjs from "dayjs";
 import * as customParseFormat from "dayjs/plugin/customParseFormat";
 import { HttpException, HttpStatus } from "@nestjs/common";
+import { commonSetting } from "../common";
 
 dayjs.extend(customParseFormat);
 
@@ -228,7 +229,7 @@ async function saveApplicantResumesAndReturnResult(
 
 export async function programmersCrawling(ID: string, PW: string) {
   const browser = await chromium.launch({
-    headless: true,
+    headless: commonSetting,
   });
   const userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";

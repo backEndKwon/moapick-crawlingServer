@@ -2,6 +2,7 @@ import { chromium } from "playwright";
 import { config } from "dotenv";
 import { uploadFileDownload, uploadFilePreview } from "../../lib/aws";
 import * as fs from "fs";
+import { commonSetting } from "../common";
 
 config();
 
@@ -68,7 +69,7 @@ async function findOpeningPostId(page) {
 
 export async function CrawlingNinehirePostId(ID, PW) {
   const browser = await chromium.launch({
-    headless: true,
+    headless: commonSetting,
   });
   const userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";

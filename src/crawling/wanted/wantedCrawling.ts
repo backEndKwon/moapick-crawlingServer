@@ -2,6 +2,7 @@ import { Page, chromium } from "playwright";
 import { config } from "dotenv";
 import { uploadFileDownload, uploadFilePreview } from "../../lib/aws";
 import * as fs from "fs";
+import { commonSetting } from "../common";
 
 config();
 
@@ -199,7 +200,7 @@ async function saveUserResume(page, postId) {
 
 export async function wantedCrawling(ID: string, PW: string) {
   const browser = await chromium.launch({
-    headless: false,
+    headless: commonSetting,
   });
   const userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";

@@ -1,8 +1,9 @@
 import { chromium } from "playwright";
+import { commonSetting } from "../common";
 
 export async function NinehireLoginCheck(email: string, password: string) {
   const browser = await chromium.launch({
-    headless: true,
+    headless: commonSetting,
   });
 
   const userAgent =

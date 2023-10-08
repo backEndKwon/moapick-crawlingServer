@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { commonSetting } from "../common";
 
 const buttonSelector = {
   emailInput: "input[name='user[email]']",
@@ -8,7 +9,7 @@ const buttonSelector = {
 
 export async function JobplanetLoginCheck(email: string, password: string) {
   const browser = await chromium.launch({
-    headless: true,
+    headless: commonSetting,
   });
 
   const userAgent =
