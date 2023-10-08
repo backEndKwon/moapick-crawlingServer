@@ -21,6 +21,7 @@ import {
   crawlingRocketPunch,
   crawlingWanted,
 } from "src/crawling/main.crawling";
+import { crawlingWantedCompanyList } from "src/crawling/wanted/wantedCompanyList";
 @Controller("user")
 export class UserController {
   constructor(
@@ -107,7 +108,9 @@ export class UserController {
   })
   async jobplanetCrawling(@Body() body) {
     console.log(`${body.email}님이 잡플래닛 크롤링을 시도하였습니다`);
-    return await crawlingJobplanet(body.email, body.password);
+    const result = await crawlingJobplanet(body.email, body.password);
+    console.log(`${result.length}명의 지원자 정보를 가져왔습니다.`)
+    return result;
   }
 
   // 내 정보조회(프로필 및 계정 전시용)
@@ -122,6 +125,12 @@ export class UserController {
     const decodedToken = await this.authService.decodeToken(token);
     const result = await this.userService.getMypage(decodedToken);
     return result.result;
+  }
+
+  @Get("/crawlingWantedCompanyList")
+  async crawlingWantedCompany() {
+    const result = await crawlingWantedCompanyList();
+    return result;
   }
 }
 

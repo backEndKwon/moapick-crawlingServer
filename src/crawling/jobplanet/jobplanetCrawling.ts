@@ -39,7 +39,6 @@ export async function login(page, ID: string, PW: string) {
 async function navigateJobPostings(page) {
   await page.goto(
     "https://b2b.jobplanet.co.kr/partners/job_management?status=opened",
-    // "https://b2b.jobplanet.co.kr/partners/job_management?status=all",
   );
   await page.waitForTimeout(2000);
 }
@@ -81,56 +80,61 @@ async function getJobPostings(page) {
   return postIds;
 }
 
-/**채용공고의 미열람 지원자들의 Id만 가져오기*/
+/**채용공고의 열람, 미열람 지원자들의 Id 가져오기*/
 async function getUserCardsId(page, postId) {
   let applicantId = [];
+  const statuses = ["opened", "not_opened"];
+  // const statuses = ["opened"];
 
-  await page.goto(
-    `https://b2b.jobplanet.co.kr/partners/applicant_management/${postId}?status=rejected_by_career_partner`,
-  );
-  await page.waitForTimeout(1500);
-  const isEmptyListExist =
-    (await page.$(".applicant_manage__list .empty_list")) !== null;
-
-  if (isEmptyListExist) {
-    console.log(
-      `${postId}<=이 공고는 미열람 지원자 없어서 Skip 하고 다음 postId로 넘어갑니다`,
+  for (const status of statuses) {
+    await page.goto(
+      `https://b2b.jobplanet.co.kr/partners/applicant_management/${postId}?status=${status}`,
     );
-    return [];
-  }
+    await page.waitForTimeout(3000);
+    const isEmptyListExist =
+      (await page.$(".applicant_manage__list .empty_list")) !== null;
 
-  await page.waitForSelector(
-    ".default.user > .default_title > button.title_name",
-  );
+    if (isEmptyListExist) {
+      console.log(
+        `${status}상태의 ${postId}<=이 공고는 미열람 지원자 없어서 Skip 하고 다음 postId로 넘어갑니다`,
+      );
+      continue;
+    }
 
-  // 모든 지원자의 이름이 포함된 버튼 요소를 선택합니다.
-  const elements = await page.$$(
-    ".default.user > .default_title > button.title_name",
-  );
+    await page.waitForSelector(
+      ".default.user > .default_title > button.title_name",
+    );
 
-  for (let element of elements) {
-    // id 속성 값을 가져옵니다.
-    const idValue = await page.evaluate((el) => el.id, element);
-    // const idValue = await element.getProperty('id');
+    // 모든 지원자의 이름이 포함된 버튼 요소를 선택합니다.
+    const elements = await page.$$(
+      ".default.user > .default_title > button.title_name",
+    );
 
-    // 'list_user_' 이후의 부분을 추출하여 배열에 추가합니다.
-    const idMatch = idValue.match(/list_user_(\d+)/);
+    for (let element of elements) {
+      // id 속성 값을 가져옵니다.
+      const idValue = await page.evaluate((el) => el.id, element);
+      // const idValue = await element.getProperty('id');
 
-    if (idMatch && idMatch[1]) {
-      applicantId.push(idMatch[1]);
+      // 'list_user_' 이후의 부분을 추출하여 배열에 추가합니다.
+      const idMatch = idValue.match(/list_user_(\d+)/);
+
+      if (idMatch && idMatch[1]) {
+        applicantId.push(idMatch[1]);
+      }
     }
   }
-
+  console.log("getUserCardsId함수에 있는 지원자ID", applicantId);
   return applicantId;
 }
 
-// 이력서를 따로 올려서 지원자리스트에서 바로 다운로드이력서를 받아오는 경우
-async function downloadResumes(page, applicantId) {
+/*② 제목링크없는 경우-1가지(이력서만있음) */
+async function downloadResumes_second(page, applicantId) {
   let downloadUrls = [];
   let previewUrls = [];
   let fileNames = [];
   console.log("이력서 따로 올린 지원자 리스트에서 다운로드 시작");
-  const userIdElement = await page.$(`#list_user_${applicantId}`);
+  const userIdElement = await page.$(`button[id="list_user_${applicantId}"]`);
+
   if (!userIdElement) {
     throw new Error("Applicant not found");
   }
@@ -206,7 +210,7 @@ export async function downloadPdf(url: string, outputPath: string) {
   }
 }
 
-// 잡플래닛 이력양식에 작성한 지원자 + 첨부파일도 따로 올린사람
+/*① 제목링크있는 경우-2가지(링크만, 링크+이력서) */
 async function downloadResumes_first(page) {
   let downloadUrls = [];
   let previewUrls = [];
@@ -224,11 +228,6 @@ async function downloadResumes_first(page) {
 
     const filteredPdfLinksAndNames = pdfLinksAndNames.filter(({ href }) =>
       href.startsWith("https://www.jobplanet.co.kr"),
-    );
-
-    console.log(
-      "===========> ~ filteredPdfLinksAndNames:",
-      filteredPdfLinksAndNames,
     );
 
     for (let { href: pdfLink, fileName, index } of filteredPdfLinksAndNames) {
@@ -318,11 +317,15 @@ async function downloadResumes_first(page) {
 }
 
 //지원자 이력서 다운로드 및 정보 가져오기
-async function saveUserResume(page, postId) {
-  const applicantIds = await getUserCardsId(page, postId);
-  console.log("===========> ~ applicantIds:", applicantIds);
+async function saveUserResume(page, postId, status) {
   let allApplicantInfo = [];
 
+  const applicantIds = await getUserCardsId(page, postId);
+  // const statuses = ["opened", "not_opened"];
+  // for (const status of statuses) {
+  const goUrl = `https://b2b.jobplanet.co.kr/partners/applicant_management/${postId}?status=${status}`;
+  await page.goto(goUrl);
+  await page.waitForTimeout(2000);
   for (let applicantId of applicantIds) {
     let applicantInfo;
     //모달 제거
@@ -336,6 +339,9 @@ async function saveUserResume(page, postId) {
     }
     // 지원자의 id를 가져옵니다.
     const userIdElement = await page.$(`button[id="list_user_${applicantId}"]`);
+    console.log(
+      `크롤링  상황 ==> 공고아이디:${postId}, 유저상태:${userIdElement}, 상태:${status}, 지원자:${applicantId}`,
+    );
 
     if (userIdElement) {
       try {
@@ -348,6 +354,7 @@ async function saveUserResume(page, postId) {
 
         if (resumePreviewElement) {
           console.log(`지원자: ${applicantId} 첫번째 기능으로 크롤링`);
+          /*① 제목링크있는 경우-2가지(링크만, 링크+이력서) */
           applicantInfo = await crawlingApplicant_first(page);
           allApplicantInfo.push(applicantInfo);
           // 해당 로직이 끝나면 페이지 뒤로 가기
@@ -357,11 +364,12 @@ async function saveUserResume(page, postId) {
           await page.goBack();
           // 해당 applicanId에 맞는 인원을 찾아서 crawlingApplicant_second 함수 실행
           console.log(`지원자: ${applicantId} 두번째 기능으로 크롤링`);
-
+          /*② 제목링크없는 경우-1가지(이력서만있음) */
           applicantInfo = await crawlingApplicant_second(
             page,
             applicantId,
             postId,
+            status,
           );
           allApplicantInfo.push(applicantInfo);
         }
@@ -370,15 +378,16 @@ async function saveUserResume(page, postId) {
       }
     }
   }
-
   console.log("===========> ~ allUserInfo:", allApplicantInfo);
-
   return allApplicantInfo;
+  // }
 }
 
 // ①에 해당하는 지원자 한명씩 정보 가져오기
 async function crawlingApplicant_first(page) {
   let applicantInfo = {};
+  const url = page.url();
+  console.log(`첫번쨰 크롤링의 url : ${url}`);
   // 이름 가져오기
   const nameSelector = ".resume_applicant__name";
   const name = await page.textContent(nameSelector);
@@ -426,11 +435,10 @@ async function crawlingApplicant_first(page) {
 }
 
 // ②에 해당하는 지원자 한명씩 정보 가져오기
-async function crawlingApplicant_second(page, applicantId, postId) {
+async function crawlingApplicant_second(page, applicantId, postId, status) {
   console.log("===========> crawlingApplicant_second:", applicantId);
   let applicantInfo = {};
-  await page.waitForTimeout(2000);
-  const url = `https://b2b.jobplanet.co.kr/partners/applicant_management/${postId}?status=rejected_by_career_partner`;
+  const url = `https://b2b.jobplanet.co.kr/partners/applicant_management/${postId}?status=${status}`;
   await page.goto(url);
   await page.waitForTimeout(2000);
   //모달 제거
@@ -452,10 +460,11 @@ async function crawlingApplicant_second(page, applicantId, postId) {
   const month = match[2];
   const day = match[3];
 
-  const positionElement = await page.$('.title_txt');
-  const positionText = positionElement ? await positionElement.textContent() : '';
+  const positionElement = await page.$(".title_txt");
+  const positionText = positionElement
+    ? await positionElement.textContent()
+    : "";
   applicantInfo["position"] = positionText;
-
 
   // YYYY-MM-DD 형식으로 변환
   const dateStr = `${year}-${month}-${day}`;
@@ -471,7 +480,7 @@ async function crawlingApplicant_second(page, applicantId, postId) {
 
   // 첨부파일 다운로드하기
 
-  const [downloadUrls, previewUrls, fileNames] = await downloadResumes(
+  const [downloadUrls, previewUrls, fileNames] = await downloadResumes_second(
     page,
     applicantId,
   );
@@ -488,17 +497,17 @@ async function crawlingApplicant_second(page, applicantId, postId) {
   return applicantInfo;
 }
 
-async function waitForSelectorInElement(page, parentElementHandle, selector) {
-  while (true) {
-    const element = await parentElementHandle.$(selector);
-    if (element !== null) return element;
-    else await page.waitForTimeout(500); // wait for half a second before trying again
-  }
-}
+// async function waitForSelectorInElement(page, parentElementHandle, selector) {
+//   while (true) {
+//     const element = await parentElementHandle.$(selector);
+//     if (element !== null) return element;
+//     else await page.waitForTimeout(500); // wait for half a second before trying again
+//   }
+// }
 
 export async function CrawlingJobplanet(ID, PW) {
   const browser = await chromium.launch({
-    headless: true,
+    headless: false,
   });
   const userAgent =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36";
@@ -510,18 +519,20 @@ export async function CrawlingJobplanet(ID, PW) {
   // Log in
   await login(page, ID, PW);
   await page.waitForTimeout(2000);
-  await navigateJobPostings(page);
+  await navigateJobPostings(page); // 오픈된 채용공고
   await page.waitForTimeout(2000);
 
-  const applyPostIds = await getJobPostings(page);
+  const applyPostIds = await getJobPostings(page); // 오픈된 채용공고 아이디
+
   let allApplicantInfo = [];
   await page.waitForTimeout(2000);
-  for (let postId of applyPostIds) {
-    console.log("현재공고==>:", postId);
-    const applicantInfo = await saveUserResume(page, postId);
-    console.log(`${postId}공고의 지원자 정보==> ${applicantInfo}`);
-    if (applicantInfo.length === 0) continue;
-    allApplicantInfo = allApplicantInfo.concat(applicantInfo);
+  const statuses = ["opened", "not_opened"];
+  for (const status of statuses) {
+    for (let postId of applyPostIds) {
+      const applicantInfo = await saveUserResume(page, postId, status);
+      if (applicantInfo.length === 0) continue;
+      allApplicantInfo = allApplicantInfo.concat(applicantInfo);
+    }
   }
   await page.waitForTimeout(2000);
   await browser.close();
