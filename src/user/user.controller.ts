@@ -37,6 +37,8 @@ export class UserController {
     description: "원티드 id, password를 받아서 회원정보 맞는지 체크",
   })
   async login(@Body() body) {
+    console.log(`${body.id}님이 원티드 계정 등록을 시도하였습니다`);
+
     return await checkWantedLogin(body.id, body.password);
   }
 
@@ -58,6 +60,7 @@ export class UserController {
     description: "로켓펀치 id, password를 받아서 회원정보 맞는지 체크",
   })
   async checkRocketPunchLogin(@Body() body) {
+    console.log(`${body.email}님이 로켓펀치 계정 등록을 시도하였습니다`);
     return await checkRocketPunchLogin(body.email, body.password);
   }
 
@@ -78,6 +81,7 @@ export class UserController {
     description: "프로그래머스 id, password를 받아서 회원정보 맞는지 체크",
   })
   async checkProgrammersLogin(@Body() body) {
+    console.log(`${body.email}님이 프로그래머스 계정 등록을 시도하였습니다`);
     return await checkProgrammersLogin(body.email, body.password);
   }
 
@@ -98,6 +102,7 @@ export class UserController {
     description: "프로그래머스 id, password를 받아서 회원정보 맞는지 체크",
   })
   async checkJobplanetLogin(@Body() body) {
+    console.log(`${body.email}님이 잡플래닛 계정 등록을 시도하였습니다`);
     return await checkJobplanetLogin(body.email, body.password);
   }
 
