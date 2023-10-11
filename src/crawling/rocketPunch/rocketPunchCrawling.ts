@@ -1,4 +1,4 @@
-import { chromium } from "playwright";
+import { Page, chromium } from "playwright";
 import { config } from "dotenv";
 import { uploadFileDownload, uploadFilePreview } from "../../lib/aws";
 import * as fs from "fs";
@@ -37,11 +37,14 @@ export async function login(page, ID: string, PW: string) {
 }
 
 //채용중인 공고페이지로 이동(게재 중인 채용 정보)
-async function navigateJobPostings(page) {
+async function navigateJobPostings(page: Page) {
   console.log("navigateJobPostings 진행중");
-  await page.goto(
-    "https://www.rocketpunch.com/companies/spartacodingclub/jobs/manage",
-  );
+  await (await page.waitForSelector("#user-dropdown")).click();
+  await (
+    await page.waitForSelector(
+      "#user-dropdown > div > div > div:nth-child(3) > a:nth-child(8)",
+    )
+  ).click();
 }
 
 /**채용공고 가져오기*/
