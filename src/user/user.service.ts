@@ -24,73 +24,66 @@ export class UserService {
 
   // # 사용자 추가정보 및 회사정보 생성 및 저장
   async addCompanyInfo(body: addCompanyInfoDto): Promise<void> {
-    try {
-      const { email, companyName, eid, phone } = body;
-      if (!email) {
-        throw new BadRequestException("이메일을 입력해주세요.");
-      }
-      if (!phone) {
-        throw new BadRequestException("전화번호를 입력해주세요.");
-      }
-      /* 전화번호 유효성 검사 */
-      await this.checkPhoneNumber(phone);
-
-      if (!companyName) {
-        throw new BadRequestException("회사명을 입력해주세요.");
-      }
-      if (!eid) {
-        throw new BadRequestException("사업자번호를 입력해주세요.");
-      }
-      /* 사업자번호 유효성 검사 */
-      const checkEid = await this.checkCorporateEidNumber(eid);
-      if (!checkEid) {
-        throw new BadRequestException("유효하지 않은 사업자 번호 입니다.");
-      }
-      const existCompany = await this.companyService.findCompanyInfoByEid(eid);
-      if (existCompany) {
-        throw new BadRequestException(
-          "현재는 회사당 하나의 계정만 생성 가능합니다. 기타 문의사항은 채널톡으로 문의부탁드립니다.",
-        );
-      }
-      const existUser = await this.findByEmail(email);
-      if (!existUser) {
-        throw new NotFoundException(
-          "추가정보 입력 전 기본 회원가입 양식을 작성해주세요.",
-        );
-      }
-
-      // ⓐ 전화번호는 user Table에 저장
-      existUser.phone = phone;
-      await this.saveUserPhoneNumber(existUser);
-
-      // ⓑ user Table 의 user_id와 eid, grade를 company Table에 저장하면서 새로운 행 생성
-      const existUserId = existUser.user_id;
-      const startDate = existUser.createdAt;
-      const startDatea = new Date(startDate); // 예시로 주어진 시작 날짜
-
-      /* 무료제공 : 2주 trial */
-      const expirationDateTimestamp =
-        startDatea.getTime() + 14 * 24 * 60 * 60 * 1000; // 현재 시간에서 14일 후의 타임스탬프
-      const expirationDate = new Date(expirationDateTimestamp).toISOString();
-
-      const createCompanyInfo = await this.companyService.createCompanyInfo(
-        companyName,
-        existUserId,
-        eid,
-        startDate,
-        expirationDate,
-      );
-      await this.companyService.saveCompanyInfo(createCompanyInfo);
-      console.log(
-        `${companyName}회사에서 "${email}"계정으로 가입완료하였습니다.`,
-      );
-      console.log(`추가정보 저장 완료`);
-    } catch (err) {
-      console.log("추가정보 저장 실패", err);
+    const { email, companyName, eid, phone } = body;
+    if (!email) {
+      throw new BadRequestException("이메일을 입력해주세요.");
     }
-  }
-  catch(err) {
-    console.log("사용자 추가정보 생성 및 저장 실패", err);
+    if (!phone) {
+      throw new BadRequestException("전화번호를 입력해주세요.");
+    }
+    /* 전화번호 유효성 검사 */
+    await this.checkPhoneNumber(phone);
+
+    if (!companyName) {
+      throw new BadRequestException("회사명을 입력해주세요.");
+    }
+    if (!eid) {
+      throw new BadRequestException("사업자번호를 입력해주세요.");
+    }
+    /* 사업자번호 유효성 검사 */
+    const checkEid = await this.checkCorporateEidNumber(eid);
+    if (!checkEid) {
+      throw new BadRequestException("유효하지 않은 사업자 번호 입니다.");
+    }
+    const existCompany = await this.companyService.findCompanyInfoByEid(eid);
+    if (existCompany) {
+      throw new BadRequestException(
+        "현재는 회사당 하나의 계정만 생성 가능합니다. 기타 문의사항은 채널톡으로 문의부탁드립니다.",
+      );
+    }
+    const existUser = await this.findByEmail(email);
+    if (!existUser) {
+      throw new NotFoundException(
+        "추가정보 입력 전 기본 회원가입 양식을 작성해주세요.",
+      );
+    }
+
+    // ⓐ 전화번호는 user Table에 저장
+    existUser.phone = phone;
+    await this.saveUserPhoneNumber(existUser);
+
+    // ⓑ user Table 의 user_id와 eid, grade를 company Table에 저장하면서 새로운 행 생성
+    const existUserId = existUser.user_id;
+    const startDate = existUser.createdAt;
+    const startDatea = new Date(startDate); // 예시로 주어진 시작 날짜
+
+    /* 무료제공 : 2주 trial */
+    const expirationDateTimestamp =
+      startDatea.getTime() + 14 * 24 * 60 * 60 * 1000; // 현재 시간에서 14일 후의 타임스탬프
+    const expirationDate = new Date(expirationDateTimestamp).toISOString();
+
+    const createCompanyInfo = await this.companyService.createCompanyInfo(
+      companyName,
+      existUserId,
+      eid,
+      startDate,
+      expirationDate,
+    );
+    await this.companyService.saveCompanyInfo(createCompanyInfo);
+    console.log(
+      `${companyName}회사에서 "${email}"계정으로 가입완료하였습니다.`,
+    );
+    console.log(`추가정보 저장 완료`);
   }
 
   // # 사용자 및 회사정보 조회

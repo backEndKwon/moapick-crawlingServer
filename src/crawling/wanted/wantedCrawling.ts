@@ -26,17 +26,16 @@ export async function login(page: Page, ID: string, PW: string) {
     await (await page.waitForSelector(buttonSelector.submitButton)).click();
     console.log("wanted 로그인 성공");
 
-    await page.waitForURL("https://www.wanted.co.kr/dashboard/user/check");
-    return true;
+    await page.waitForURL("https://www.wanted.co.kr/dashboard/home");
   } catch (error) {
     console.log(error);
-    return false;
   }
 }
 
 //채용중인 공고페이지로 이동
 async function navigateJobPostings(page: Page) {
   console.log("wanted 채용 페이지 이동");
+  await page.waitForURL("https://www.wanted.co.kr/dashboard/home");
   await page.goto(
     "https://www.wanted.co.kr/dashboard/recruitment?order=id&status=active",
   );

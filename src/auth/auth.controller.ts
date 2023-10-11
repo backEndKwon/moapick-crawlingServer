@@ -7,6 +7,7 @@ import {
   Res,
   UseGuards,
   Headers,
+  HttpException,
 } from "@nestjs/common";
 import {
   GoogleLoginDto,
@@ -54,8 +55,11 @@ export class AuthController {
     description: "[추가정보] 추가정보받기 API",
   })
   async addCompanyInfo(@Body() body: addCompanyInfoDto): Promise<void> {
-    await this.userService.addCompanyInfo(body);
-    return;
+    try {
+      await this.userService.addCompanyInfo(body);
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
   }
 
   // // (*) AuthGuard 테스트를 위한 임시 API
