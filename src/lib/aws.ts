@@ -31,9 +31,7 @@ export const uploadFileDownload = (fileName: string): Promise<string> => {
         if (err) {
           reject(err);
         }
-        console.log(data);
         const url = encodeURIComponent(params.Key);
-        console.log("🚀 ~ file: aws.ts:36 ~ returnnewPromise ~ url:", url);
         const downloadUrl = `https://d1elz4g2bnstoc.cloudfront.net/${url}`;
         resolve(downloadUrl);
       },
@@ -61,9 +59,7 @@ export const uploadFilePreview = (fileName: string): Promise<string> => {
         if (err) {
           reject(err);
         }
-        console.log(data);
         const url = encodeURIComponent(params.Key);
-        console.log("🚀 ~ file: aws.ts:65 ~ returnnewPromise ~ url:", url);
         const downloadUrl = `https://d1elz4g2bnstoc.cloudfront.net/${url}`;
         resolve(downloadUrl);
       },
