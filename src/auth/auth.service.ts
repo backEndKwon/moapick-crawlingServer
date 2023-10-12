@@ -22,8 +22,8 @@ config();
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService,
     private readonly companyService: CompanyService,
+    private readonly jwtService: JwtService,
   ) {}
 
   // # [일반] 회원가입

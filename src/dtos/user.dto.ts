@@ -3,29 +3,30 @@ import { UsersEntity } from "src/entity/user.entity";
 // import { IsOptional, IsString } from 'class-validator';
 // import { UUID } from '../types/user.type';
 
-// [일반] 회원가입 dto
+// [계정생성 1단계] 회원가입 dto
 export class SignupDto {
   @ApiProperty({ description: "DTO 이름" })
   name: string;
+
   @ApiProperty({ description: "DTO 이메일" })
   email: string;
 
   @ApiProperty({ description: "DTO 비밀번호" })
   password: string;
 
-  @ApiProperty({ description: "" })
+  @ApiProperty({ description: "개인정보 활용 동의서" })
   isTermsAgreement: Boolean;
 
-  @ApiProperty({ description: "" })
+  @ApiProperty({ description: "개인정보 활용 동의서" })
   isPrivacyPolicyAgreement: Boolean;
 
-  @ApiProperty({ description: "" })
-  isMarketingAgreement: Boolean;
-
-  accessToken?: string | null | undefined;
+  /* 마케팅 동의는 차후 진행 */
+  // @ApiProperty({ description: "" })
+  // isMarketingAgreement: Boolean;
+  accessToken?: string | null | undefined; // 로그인 유지를 위한 토큰
 }
 
-// [추가정보] 추가정보 dto
+// [계정생성 1단계] 회원가입 dto
 export class addCompanyInfoDto {
   @ApiProperty({ description: "DTO 전화번호" })
   phone: string;

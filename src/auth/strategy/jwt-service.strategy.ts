@@ -12,7 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly configService: ConfigService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), //클라으언트로부터 전송된 토큰 추출
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), //client로부터 전송된 토큰 추출
       secretOrKey: configService.get<string>("JWT_SECRETKEY"), //토큰 서명에 사용할 비밀키 지정
       ignoreExpiration: false, //토큰 만료여부 검사
     });
