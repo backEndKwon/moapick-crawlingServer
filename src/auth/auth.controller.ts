@@ -1,8 +1,9 @@
 import { Controller, Body, Post, Res, HttpException, UseFilters } from "@nestjs/common";
-import { SignupDto, addCompanyInfoDto } from "src/dtos/user.dto";
+import { SignupDto, addCompanyInfoDto } from "src/user/dtos/user.dto";
 import { UserService } from "../user/user.service";
 import { AuthService } from "src/auth/auth.service";
 import { ApiOperation } from "@nestjs/swagger";
+import { UserBodyDataValidationPipe } from "src/user/pipe/user-body-data-validation.pipe";
 
 @Controller("auth")
 export class AuthController {
@@ -17,7 +18,7 @@ export class AuthController {
     summary: "[계정생성 1단계] 회원가입 API",
     description: "[계정생성 1단계] 사용자 초기 계정 생성",
   })
-  async signUp(@Res() res: Response, @Body() signupDto: SignupDto) {
+  async signUp(@Res() res: Response, @Body(UserBodyDataValidationPipe) signupDto: SignupDto) {
     return await this.authService.signUp(res, signupDto);
   }
 

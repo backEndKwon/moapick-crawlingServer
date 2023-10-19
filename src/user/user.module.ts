@@ -9,7 +9,7 @@ import { Repository } from "typeorm";
 import { AuthService } from "src/auth/auth.service";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
-import { JwtStrategy } from "src/auth/strategy/jwt-service.strategy";
+import { JwtStrategy } from "src/common/strategy/jwt-service.strategy";
 import { ConfigService } from "@nestjs/config";
 import { CompanyService } from "src/company/company.service";
 

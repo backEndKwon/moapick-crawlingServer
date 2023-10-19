@@ -9,8 +9,8 @@ import {
 import { UsersEntity } from "src/entity/user.entity";
 import { JwtService } from "@nestjs/jwt";
 import { UserService } from "src/user/user.service";
-import { LoginDto, SignupDto } from "src/dtos/user.dto";
-import { validatePassword } from "./validations/password.validate";
+import { LoginDto, SignupDto } from "src/user/dtos/user.dto";
+import { validatePassword } from "../common/validations/password.validate";
 import { JwtPayload } from "./types/token.type";
 import { config } from "dotenv";
 // import { HttpExceptionFilter } from "./exceptions/http-Exception.filter";

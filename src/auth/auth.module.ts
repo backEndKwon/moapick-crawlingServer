@@ -9,7 +9,7 @@ import { ConfigService } from "@nestjs/config";
 import { UserService } from "src/user/user.service";
 import { CompanyEntity } from "src/entity/company.entity";
 import { CompanyService } from "src/company/company.service";
-import { JwtStrategy } from "./strategy/jwt-service.strategy";
+import { JwtStrategy } from "../common/strategy/jwt-service.strategy";
 @Module({
   controllers: [AuthController],
   imports: [

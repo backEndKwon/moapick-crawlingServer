@@ -6,7 +6,7 @@ import {
 import { UsersEntity } from "src/entity/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { SignupDto, addCompanyInfoDto } from "src/dtos/user.dto";
+import { SignupDto, addCompanyInfoDto } from "src/user/dtos/user.dto";
 import { CompanyService } from "src/company/company.service";
 
 /* 나인하이어는 추후 api 연동 가능여부 체크후 진행 */
@@ -23,7 +23,7 @@ import {
   NotExistCompanyException,
   NotExistUserException,
   PhoneNumberException,
-} from "src/auth/exceptions/common-Exceptioin";
+} from "src/common/exceptions/common-Exceptioin";
 
 @Injectable()
 export class UserService {

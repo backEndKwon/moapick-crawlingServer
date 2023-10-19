@@ -9,7 +9,7 @@ import { ConfigModule } from "@nestjs/config";
 import { ConfigService } from "@nestjs/config";
 import { CompanyModule } from "./company/company.modules";
 import { APP_FILTER } from "@nestjs/core";
-import { HttpExceptionFilter } from "./auth/exceptions/http-Exception.filter";
+import { HttpExceptionFilter } from "./common/exceptions/http-Exception.filter";
 @Module({
   imports: [
     ConfigModule.forRoot({

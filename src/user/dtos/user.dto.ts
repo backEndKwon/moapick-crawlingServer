@@ -1,22 +1,27 @@
 import { ApiProperty, PickType } from "@nestjs/swagger";
 import { UsersEntity } from "src/entity/user.entity";
-// import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from "class-validator";
 // import { UUID } from '../types/user.type';
 
 // [계정생성 1단계] 회원가입 dto
 export class SignupDto {
   @ApiProperty({ description: "DTO 이름" })
+  @IsString()
   name: string;
 
   @ApiProperty({ description: "DTO 이메일" })
+  @IsString()
   email: string;
 
   @ApiProperty({ description: "DTO 비밀번호" })
+  @IsString()
   password: string;
 
   @ApiProperty({ description: "개인정보 활용 동의서" })
+  @IsBoolean()
   isTermsAgreement: Boolean;
 
+  @IsBoolean()
   @ApiProperty({ description: "개인정보 활용 동의서" })
   isPrivacyPolicyAgreement: Boolean;
 
@@ -29,24 +34,30 @@ export class SignupDto {
 // [계정생성 1단계] 회원가입 dto
 export class addCompanyInfoDto {
   @ApiProperty({ description: "DTO 전화번호" })
+  @IsString()
   phone: string;
 
   @ApiProperty({ description: "DTO 회사이름" })
+  @IsString()
   companyName: string;
 
   @ApiProperty({ description: "DTO 사업자번호" })
+  @IsString()
   eid: string;
 
   @ApiProperty({ description: "DTO email/user_id찾기위해" })
+  @IsString()
   email: string;
 
   @ApiProperty({ description: "계정 생성하자마자 2주 trial기간 시작" })
+  @IsString()
   paymentStartDate: string;
 
   @ApiProperty({
     description:
       "지불날짜로 부터 금액 확인후 +DAY(기본 첫 TRIAL기간에는 +14일)",
   })
+  @IsString()
   paymentExpirationDate: string;
 }
 
