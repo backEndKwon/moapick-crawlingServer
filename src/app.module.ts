@@ -8,6 +8,8 @@ import { AuthModule } from "./auth/auth.module";
 import { ConfigModule } from "@nestjs/config";
 import { ConfigService } from "@nestjs/config";
 import { CompanyModule } from "./company/company.modules";
+import { APP_FILTER } from "@nestjs/core";
+import { HttpExceptionFilter } from "./auth/exceptions/http-Exception.filter";
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,6 +26,9 @@ import { CompanyModule } from "./company/company.modules";
     CompanyModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_FILTER, useClass: HttpExceptionFilter },
+  ],
 })
 export class AppModule {}

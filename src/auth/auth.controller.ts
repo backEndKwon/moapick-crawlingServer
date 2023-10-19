@@ -1,4 +1,4 @@
-import { Controller, Body, Post, Res, HttpException } from "@nestjs/common";
+import { Controller, Body, Post, Res, HttpException, UseFilters } from "@nestjs/common";
 import { SignupDto, addCompanyInfoDto } from "src/dtos/user.dto";
 import { UserService } from "../user/user.service";
 import { AuthService } from "src/auth/auth.service";
@@ -28,11 +28,7 @@ export class AuthController {
     description: "[계정생성 2단계] 추가정보받기 API",
   })
   async addCompanyInfo(@Body() body: addCompanyInfoDto): Promise<void> {
-    try {
       await this.userService.addCompanyInfo(body);
-    } catch (error) {
-      throw new HttpException(error.message, error.status);
-    }
   }
 }
 

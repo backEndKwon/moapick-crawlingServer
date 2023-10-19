@@ -4,6 +4,7 @@ import {
   Res,
   BadRequestException,
   HttpStatus,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { UsersEntity } from "src/entity/user.entity";
 import { JwtService } from "@nestjs/jwt";
@@ -12,7 +13,7 @@ import { LoginDto, SignupDto } from "src/dtos/user.dto";
 import { validatePassword } from "./validations/password.validate";
 import { JwtPayload } from "./types/token.type";
 import { config } from "dotenv";
-import { AuthException } from "./exceptions/authException";
+// import { HttpExceptionFilter } from "./exceptions/http-Exception.filter";
 import * as argon from "argon2";
 import { CompanyService } from "src/company/company.service";
 
@@ -85,10 +86,7 @@ export class AuthService {
         loginUserPassword,
       );
       if (!isValidPassword)
-        throw new AuthException(
-          "비밀번호가 일치하지 않습니다.",
-          HttpStatus.UNAUTHORIZED,
-        );
+        throw new BadRequestException("비밀번호가 일치하지 않습니다.");
       const accessToken = await this.signUpGenerateJwt(
         email,
         userInfo.createdAt,
@@ -119,9 +117,8 @@ export class AuthService {
       console.log("로그인에 성공하였습니다");
     } catch (err) {
       console.log(err);
-      throw new AuthException(
-        "로그인에 실패하였습니다.",
-        HttpStatus.UNAUTHORIZED,
+      throw new UnauthorizedException(
+        "로그인에 실패하였습니다."
       );
     }
   }
@@ -143,7 +140,7 @@ export class AuthService {
       console.log("JWT 발급 성공");
       return accessToken;
     } catch (err) {
-      throw new AuthException("JWT 발급 실패", HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException("JWT 발급 실패");
     }
   }
 
@@ -182,7 +179,7 @@ export class AuthService {
         return accessToken;
       }
     } catch (err) {
-      throw new AuthException("JWT 발급 실패", HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException("JWT 발급 실패");
     }
   }
 
@@ -193,7 +190,7 @@ export class AuthService {
       if (!decoded) throw new ForbiddenException("토큰이 존재하지 않습니다.");
       return decoded;
     } catch (err) {
-      throw new AuthException("JWT 디코딩 실패", HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException("JWT 디코딩 실패");
     }
   }
 
@@ -210,7 +207,7 @@ export class AuthService {
       console.log("로그아웃 성공");
       return { accessToken, existUser };
     } catch (err) {
-      throw new AuthException("로그아웃 실패", HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException("로그아웃 실패");
     }
   }
 

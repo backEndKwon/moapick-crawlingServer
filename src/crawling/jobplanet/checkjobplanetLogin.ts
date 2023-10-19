@@ -9,7 +9,7 @@ const buttonSelector = {
 
 export async function JobplanetLoginCheck(email: string, password: string) {
   const browser = await chromium.launch({
-    headless: commonSetting,
+    headless: false,
   });
 
   const userAgent =
@@ -46,6 +46,7 @@ export async function JobplanetLoginCheck(email: string, password: string) {
     await page.waitForTimeout(2000);
     let failureMessageElement;
     failureMessageElement = await page.$(".txt.ico_email_w");
+    await page.waitForTimeout(5000);
     if (failureMessageElement) {
       console.log("로그인 실패");
       await browser.close();

@@ -13,6 +13,17 @@ import { CompanyService } from "src/company/company.service";
 import { NinehireLoginCheck } from "src/crawling/ninehire/checkNinehireLogin";
 import { CrawlingNinehirePostId } from "src/crawling/ninehire/ninehirePostIdCrawling";
 import { CrawlingNinehire } from "src/crawling/ninehire/ninehireCrawling";
+import {
+  CommonException,
+  CompanyNameException,
+  EidException,
+  EmailException,
+  ExistUserException,
+  LimitCreateCompanyAccountException,
+  NotExistCompanyException,
+  NotExistUserException,
+  PhoneNumberException,
+} from "src/auth/exceptions/common-Exceptioin";
 
 @Injectable()
 export class UserService {
@@ -26,36 +37,32 @@ export class UserService {
   async addCompanyInfo(body: addCompanyInfoDto): Promise<void> {
     const { email, companyName, eid, phone } = body;
     if (!email) {
-      throw new BadRequestException("이메일을 입력해주세요.");
+      throw new EmailException();
     }
     if (!phone) {
-      throw new BadRequestException("전화번호를 입력해주세요.");
+      throw new PhoneNumberException();
     }
     /* 전화번호 유효성 검사 */
     await this.checkPhoneNumber(phone);
 
     if (!companyName) {
-      throw new BadRequestException("회사명을 입력해주세요.");
+      throw new CompanyNameException();
     }
     if (!eid) {
-      throw new BadRequestException("사업자번호를 입력해주세요.");
+      throw new EidException();
     }
-    /* 사업자번호 유효성 검사 */
-    const checkEid = await this.checkCorporateEidNumber(eid);
-    if (!checkEid) {
-      throw new BadRequestException("유효하지 않은 사업자 번호 입니다.");
-    }
+    // /* 사업자번호 유효성 검사 */
+    // const checkEid = await this.checkCorporateEidNumber(eid);
+    // if (!checkEid) {
+    //   throw new BadRequestException("유효하지 않은 사업자 번호 입니다.");
+    // }
     const existCompany = await this.companyService.findCompanyInfoByEid(eid);
     if (existCompany) {
-      throw new BadRequestException(
-        "현재는 회사당 하나의 계정만 생성 가능합니다. 기타 문의사항은 채널톡으로 문의부탁드립니다.",
-      );
+      throw new LimitCreateCompanyAccountException();
     }
     const existUser = await this.findByEmail(email);
     if (!existUser) {
-      throw new NotFoundException(
-        "추가정보 입력 전 기본 회원가입 양식을 작성해주세요.",
-      );
+      throw new ExistUserException();
     }
 
     // ⓐ 전화번호는 user Table에 저장
@@ -92,14 +99,14 @@ export class UserService {
       const email = decodedToken.email;
       const userInfo = await this.findByEmail(email);
       if (!userInfo) {
-        throw new NotFoundException("존재하지 않는 사용자입니다.");
+        throw new NotExistUserException();
       }
       const userId = userInfo.user_id;
       const companyInfo = await this.companyService.findCompanyInfoByUserId(
         userId,
       );
       if (!companyInfo) {
-        throw new NotFoundException("존재하지 않는 회사정보입니다.");
+        throw new NotExistCompanyException();
       }
 
       //프론트 요청사항 : 따로 빼서 보내주기
@@ -110,7 +117,7 @@ export class UserService {
       const result = { ...company, user_name, user_email, user_userId };
       return { message: "회사정보 조회 완료", result };
     } catch (err) {
-      throw new NotFoundException("내 정보조회에 실패하였습니다.");
+      throw new CommonException();
     }
   }
 
@@ -146,7 +153,7 @@ export class UserService {
   async checkPhoneNumber(phone: string) {
     const phoneRegex = /^\d{11}$/;
     if (!phoneRegex.test(phone)) {
-      throw new BadRequestException("전화번호를 정확히 입력해주세요.");
+      throw new PhoneNumberException();
     }
   }
 
